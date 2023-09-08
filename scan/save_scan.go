@@ -19,7 +19,6 @@ func main() {
 
 	data = redis.SMembers("have_save_file")
 	for _, v := range data {
-		fmt.Println(v)
 		myFile.AppendContent(filename, strings.Trim(v, "\n"))
 	}
 
