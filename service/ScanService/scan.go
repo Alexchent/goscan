@@ -12,7 +12,8 @@ import (
 
 //const SavePath = "/Users/chentao/have_save_file_%s.txt"
 
-const SavePath = "have_save_file_%s.txt"
+const SaveDir = "/scanLog/"
+const SavePath = "have_save_file_%d.txt"
 const CacheKey = "have_save_file"
 
 type Config struct {

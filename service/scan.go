@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	scan "github.com/Alexchent/goscan/scan/ScanService"
+	scan "github.com/Alexchent/goscan/service/ScanService"
 	"time"
 )
 

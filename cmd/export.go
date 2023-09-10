@@ -7,7 +7,8 @@ import (
 	"fmt"
 	"github.com/Alexchent/goscan/cache/redis"
 	myFile "github.com/Alexchent/goscan/file"
-	scan "github.com/Alexchent/goscan/scan/ScanService"
+	scan "github.com/Alexchent/goscan/service/ScanService"
+	"os"
 	"strings"
 	"time"
 
@@ -21,33 +22,27 @@ var exportCmd = &cobra.Command{
 	Long:  `将所有记录到处到文件中`,
 	Run: func(cmd *cobra.Command, args []string) {
 		start := time.Now()
-		defer fmt.Println(time.Since(start))
+		defer fmt.Println("文件导出完成，用时：", time.Since(start))
 
+		dir, err := os.UserHomeDir()
+		if err != nil {
+			return
+		}
+		saveDir := dir + scan.SaveDir
+		myFile.CreateDateDir(saveDir)
+
+		fmt.Println("导出文件的路径:", saveDir)
 		var data []string
-		filename := fmt.Sprintf(scan.SavePath, time.Now().Format("060102"))
+		filename := fmt.Sprintf(saveDir+scan.SavePath, time.Now().Unix())
 
 		data = redis.SMembers("have_save_file")
+		// 过滤掉换行符
 		for _, v := range data {
 			myFile.AppendContent(filename, strings.Trim(v, "\n"))
-		}
-
-		data = redis.SMembers("laravel_database_files")
-		for _, v := range data {
-			myFile.AppendContent(filename, v+"\n")
 		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(exportCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// exportCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// exportCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -55,7 +55,7 @@ func readString(filename string) {
 		if data != "" {
 			fmt.Println(data)
 			// 写入导redis内
-			//redis.SAdd(scan.CacheKey, data)
+			//redis.SAdd(service.CacheKey, data)
 		}
 	}
 }
