@@ -5,7 +5,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Alexchent/goscan/cache/redis"
+	"github.com/Alexchent/goscan/cache/mredis"
 	myFile "github.com/Alexchent/goscan/file"
 	scan "github.com/Alexchent/goscan/service/ScanService"
 	"os"
@@ -35,7 +35,7 @@ var exportCmd = &cobra.Command{
 		var data []string
 		filename := fmt.Sprintf(saveDir+scan.SavePath, time.Now().Unix())
 
-		data = redis.SMembers("have_save_file")
+		data = mredis.SMembers("have_save_file")
 		// 过滤掉换行符
 		for _, v := range data {
 			myFile.AppendContent(filename, strings.Trim(v, "\n"))

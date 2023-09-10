@@ -23,7 +23,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Alexchent/goscan/cache/redis"
+	"github.com/Alexchent/goscan/cache/mredis"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -36,18 +36,18 @@ var cleanCmd = &cobra.Command{
 	Long:  `清理掉制定的文件类型`,
 	Run: func(cmd *cobra.Command, args []string) {
 		key := "have_save_file"
-		val := redis.SMembers(key)
+		val := mredis.SMembers(key)
 		for _, v := range val {
 			newv := strings.TrimRight(v, "\n")
-			redis.SRem(key, v)
-			redis.SAdd(key, newv)
+			mredis.SRem(key, v)
+			mredis.SAdd(key, newv)
 
 			// 按 后缀清理
 			if strings.HasSuffix(v, "js") ||
 				strings.HasSuffix(v, "torrent") ||
 				strings.HasSuffix(v, "jpeg") {
 				fmt.Println("过滤掉:", v)
-				redis.SRem(key, v)
+				mredis.SRem(key, v)
 			}
 		}
 	},

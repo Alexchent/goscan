@@ -1,4 +1,4 @@
-package redis
+package mredis
 
 import (
 	"testing"

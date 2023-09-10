@@ -1,4 +1,4 @@
-package redis
+package mredis
 
 import (
 	"context"
@@ -28,7 +28,7 @@ func init() {
 func Get(key string) (val string) {
 	val, err := Client.Get(ctx, key).Result()
 	if err == redis.Nil {
-		fmt.Println("key2 does not exist")
+		fmt.Println("key does not exist")
 	} else if err != nil {
 		panic(err)
 	}
@@ -63,7 +63,7 @@ func SAdd(key string, value interface{}) int64 {
 func SMembers(key string) (val []string) {
 	val, err := Client.SMembers(ctx, key).Result()
 	if err == redis.Nil {
-		fmt.Println("key2 does not exist")
+		fmt.Println("key does not exist")
 	} else if err != nil {
 		panic(err)
 	}
@@ -103,7 +103,7 @@ func SPopN(key string, count int64) (val []string) {
 func SScan(key string, cursor uint64, match string, count int64) (val []string) {
 	val, _, err := Client.SScan(ctx, key, cursor, match, count).Result()
 	if err == redis.Nil {
-		fmt.Println("key2 does not exist")
+		fmt.Println("key does not exist")
 	} else if err != nil {
 		panic(err)
 	}

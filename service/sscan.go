@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/Alexchent/goscan/cache/redis"
+	"github.com/Alexchent/goscan/cache/mredis"
 	"strings"
 )
 
@@ -22,7 +22,7 @@ func main() {
 }
 
 func SearchFromRedisSet(key, path string) (count int) {
-	res := redis.SMembers(key)
+	res := mredis.SMembers(key)
 	count = 0
 	for _, val := range res {
 		if strings.Contains(strings.ToLower(val), path) {

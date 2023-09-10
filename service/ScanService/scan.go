@@ -2,7 +2,7 @@ package scan
 
 import (
 	"fmt"
-	"github.com/Alexchent/goscan/cache/redis"
+	"github.com/Alexchent/goscan/cache/mredis"
 	myFile "github.com/Alexchent/goscan/file"
 	"log"
 	"os"
@@ -80,7 +80,7 @@ func WriteToFile(filePath string) {
 			content := filePath + "/" + fileName
 
 			// 保存到redis成功，说明是新的文件
-			if redis.SAdd(CacheKey, content) == 1 {
+			if mredis.SAdd(CacheKey, content) == 1 {
 				fmt.Println("发现新的文件：", fileName)
 				//filename := fmt.Sprintf(SavePath, time.Now().Format("060102"))
 				myFile.AppendContent("have_save_file.txt", content)
