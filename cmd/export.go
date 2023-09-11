@@ -41,7 +41,7 @@ var exportCmd = &cobra.Command{
 		var data []string
 		filename := fmt.Sprintf(saveDir+scan.SavePath, time.Now().Unix())
 
-		data = mredis.SMembers("have_save_file")
+		data = mredis.SMembers(scan.CacheKey)
 		// 过滤掉换行符
 		for _, v := range data {
 			myFile.AppendContent(filename, strings.Trim(v, "\n"))

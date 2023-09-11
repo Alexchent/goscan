@@ -24,6 +24,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/Alexchent/goscan/cache/mredis"
+	scan "github.com/Alexchent/goscan/service"
 	"github.com/spf13/cobra"
 	"strings"
 )
@@ -42,7 +43,7 @@ var findCmd = &cobra.Command{
 		}
 		path = strings.ToLower(path)
 		count := 0
-		count += SearchFromRedisSet("have_save_file", path)
+		count += SearchFromRedisSet(scan.CacheKey, path)
 		res := fmt.Sprintf("本次扫描发现 %d 个文件", count)
 		fmt.Println(res)
 	},
