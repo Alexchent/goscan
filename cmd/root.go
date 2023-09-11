@@ -11,14 +11,11 @@ var (
 	// Used for flags.
 	cfgFile     string
 	userLicense string
-	config      string
 
 	rootCmd = &cobra.Command{
 		Use:   "cobra-cli",
-		Short: "A generator for Cobra based Applications",
-		Long: `Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+		Short: "scan 用于扫描文件目录，和查找文件",
+		Long:  `scan 是一个用于扫描本地文件，形成日志文件，以便或许快速查找文件的程序`,
 	}
 )
 
@@ -28,19 +25,15 @@ func Execute() error {
 }
 
 // 绑定参数示例
-// go run main.go version --author=zhangdd 等同于 go run main.go version -a=zhangdd
+// go run main.go version --license=MIT 等同于 go run main.go version -l=MIT
 func init() {
 	cobra.OnInitialize(initConfig)
 
+	// --config="/config/scan/.cobra.yaml"
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
-	rootCmd.PersistentFlags().StringP("author", "a", "YOUR NAME", "author name for copyright attribution")
-	// 绑定到变量 userLicense 和 viper.license 中
-	rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "name of license for the project")
-	rootCmd.PersistentFlags().Bool("viper", true, "use Viper for configuration")
-	//viper.BindPFlag("author", rootCmd.PersistentFlags().Lookup("author"))
-	//viper.BindPFlag("useViper", rootCmd.PersistentFlags().Lookup("viper"))
-	//viper.SetDefault("author", "NAME HERE <EMAIL ADDRESS>")
-	//viper.SetDefault("license", "apache")
+	// 绑定到变量 userLicense
+	// --license=MIT 或 -l=license
+	rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "许可证")
 }
 
 func initConfig() {
