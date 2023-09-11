@@ -22,9 +22,4 @@ func init() {
 	if err := viper.Unmarshal(Conf); err != nil {
 		panic(fmt.Errorf("unmarshal conf failed, err:%s \n", err))
 	}
-	//fmt.Println(Conf)
-}
-
-func (c *Config) Get() *Config {
-	return c
 }

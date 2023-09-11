@@ -8,7 +8,7 @@ import (
 	"github.com/Alexchent/goscan/cache/mredis"
 	mconf "github.com/Alexchent/goscan/config"
 	myFile "github.com/Alexchent/goscan/file"
-	scan "github.com/Alexchent/goscan/service/ScanService"
+	scan "github.com/Alexchent/goscan/service"
 	"os"
 	"strings"
 	"time"
