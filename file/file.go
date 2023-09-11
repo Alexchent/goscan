@@ -30,9 +30,17 @@ func CreateDateDir(folderPath string) (dirPath string) {
 	if _, err := os.Stat(folderPath); os.IsNotExist(err) {
 		// 必须分成两步
 		// 先创建文件夹
-		os.MkdirAll(folderPath, os.ModePerm)
+		err := os.MkdirAll(folderPath, os.ModePerm)
+		if err != nil {
+			log.Fatal(err)
+			return ""
+		}
 		// 再修改权限
-		os.Chmod(folderPath, 0777)
+		err = os.Chmod(folderPath, 0777)
+		if err != nil {
+			log.Fatal(err)
+			return ""
+		}
 	}
 	return folderPath
 }

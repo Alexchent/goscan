@@ -36,7 +36,6 @@ func init() {
 	rootCmd.PersistentFlags().StringP("author", "a", "YOUR NAME", "author name for copyright attribution")
 	// 绑定到变量 userLicense 和 viper.license 中
 	rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "name of license for the project")
-	//rootCmd.PersistentFlags().StringVarP(&config, "config", "c", "", "配置文件的位置")
 	rootCmd.PersistentFlags().Bool("viper", true, "use Viper for configuration")
 	//viper.BindPFlag("author", rootCmd.PersistentFlags().Lookup("author"))
 	//viper.BindPFlag("useViper", rootCmd.PersistentFlags().Lookup("viper"))

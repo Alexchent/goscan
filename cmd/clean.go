@@ -45,6 +45,7 @@ var cleanCmd = &cobra.Command{
 			// 按 后缀清理
 			if strings.HasSuffix(v, "js") ||
 				strings.HasSuffix(v, "torrent") ||
+				strings.HasSuffix(v, "localized") ||
 				strings.HasSuffix(v, "jpeg") {
 				fmt.Println("过滤掉:", v)
 				mredis.SRem(key, v)

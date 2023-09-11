@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/Alexchent/goscan/cache/mredis"
+	mconf "github.com/Alexchent/goscan/config"
 	myFile "github.com/Alexchent/goscan/file"
 	scan "github.com/Alexchent/goscan/service/ScanService"
 	"os"
@@ -29,9 +30,14 @@ var exportCmd = &cobra.Command{
 			return
 		}
 		saveDir := dir + scan.SaveDir
+		if mconf.Conf.Dir != "" {
+			saveDir = mconf.Conf.Dir
+			//fmt.Println("保存文件路径", mconf.Conf.Dir)
+		}
+		fmt.Println("导出文件的路径:", saveDir)
+
 		myFile.CreateDateDir(saveDir)
 
-		fmt.Println("导出文件的路径:", saveDir)
 		var data []string
 		filename := fmt.Sprintf(saveDir+scan.SavePath, time.Now().Unix())
 

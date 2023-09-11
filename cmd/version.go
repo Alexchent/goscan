@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	mconf "github.com/Alexchent/goscan/config"
 	"github.com/spf13/cobra"
 )
 
@@ -21,6 +22,7 @@ var versionCmd = &cobra.Command{
 		//fmt.Println("author:", viper.Get("author"))
 		//fmt.Println("useviper:", viper.Get("useviper"))
 		//fmt.Println("license:", viper.Get("license"))
-
+		fmt.Println(mconf.Conf.Dir)
+		fmt.Println(mconf.Conf.FilterType)
 	},
 }
