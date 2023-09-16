@@ -41,7 +41,6 @@ var findCmd = &cobra.Command{
 		if err != nil {
 			return
 		}
-		path = strings.ToLower(path)
 		count := 0
 		count += SearchFromRedisSet(scan.CacheKey, path)
 		res := fmt.Sprintf("本次扫描发现 %d 个文件", count)
@@ -57,7 +56,7 @@ func SearchFromRedisSet(key, path string) (count int) {
 	res := mredis.SMembers(key)
 	count = 0
 	for _, val := range res {
-		if strings.Contains(strings.ToLower(val), path) {
+		if strings.Contains(strings.ToLower(val), strings.ToLower(path)) {
 			fmt.Println(val)
 			count++
 		}

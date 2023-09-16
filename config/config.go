@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/spf13/viper"
+	"os"
 )
 
 type Config struct {
@@ -13,9 +14,10 @@ type Config struct {
 var Conf = &Config{}
 
 func init() {
-	viper.SetConfigFile("./config/scan.yaml") // 指定配置文件路径
-	err := viper.ReadInConfig()               // 读取配置信息
-	if err != nil {                           // 读取配置信息失败
+	u, _ := os.UserHomeDir()
+	viper.SetConfigFile(u + "/scan.yaml") // 指定配置文件路径
+	err := viper.ReadInConfig()           // 读取配置信息
+	if err != nil {                       // 读取配置信息失败
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
 	// 将读取的配置信息保存至全局变量Conf
