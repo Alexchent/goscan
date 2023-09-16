@@ -24,18 +24,21 @@ package cmd
 import (
 	"fmt"
 	"github.com/Alexchent/goscan/cache/mredis"
+	scan "github.com/Alexchent/goscan/service"
 	"strings"
 
 	"github.com/spf13/cobra"
 )
 
+var clear string
+
 // cleanCmd represents the clean command
 var cleanCmd = &cobra.Command{
 	Use:   "clean",
-	Short: "清理掉制定的文件类型",
-	Long:  `清理掉制定的文件类型`,
+	Short: "清理掉指定的文件类型",
+	Long:  `清理掉指定的文件类型`,
 	Run: func(cmd *cobra.Command, args []string) {
-		key := "have_save_file"
+		key := scan.CacheKey
 		val := mredis.SMembers(key)
 		for _, v := range val {
 			newv := strings.TrimRight(v, "\n")
@@ -43,17 +46,27 @@ var cleanCmd = &cobra.Command{
 			mredis.SAdd(key, newv)
 
 			// 按 后缀清理
-			if strings.HasSuffix(v, "js") ||
-				strings.HasSuffix(v, "torrent") ||
-				strings.HasSuffix(v, "localized") ||
-				strings.HasSuffix(v, "jpeg") {
-				fmt.Println("过滤掉:", v)
-				mredis.SRem(key, v)
+			if clear != "" {
+				if strings.HasSuffix(v, clear) {
+					fmt.Println("过滤掉：", v)
+					mredis.SRem(key, v)
+				}
+			} else {
+				//if strings.HasSuffix(v, "js") ||
+				//	strings.HasSuffix(v, "torrent") ||
+				//	strings.HasSuffix(v, "localized") ||
+				//	strings.HasSuffix(v, "jpeg") {
+				//	fmt.Println("过滤掉:", v)
+				//	mredis.SRem(key, v)
+				//}
 			}
 		}
 	},
 }
 
+// go run main clean -c apk
 func init() {
+	// 本地标志, 此处进队cleanCmd有效
+	cleanCmd.Flags().StringVarP(&clear, "clear", "c", "", "需要清理掉的文件类型")
 	rootCmd.AddCommand(cleanCmd)
 }
