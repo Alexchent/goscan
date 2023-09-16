@@ -11,6 +11,7 @@ var (
 	// Used for flags.
 	cfgFile     string
 	userLicense string
+	loadFile    string
 
 	rootCmd = &cobra.Command{
 		Use:   "cobra-cli",
@@ -34,6 +35,7 @@ func init() {
 	// 绑定到变量 userLicense
 	// --license=MIT 或 -l=license
 	rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "许可证")
+	rootCmd.PersistentFlags().StringVarP(&loadFile, "loadFile", "f", "", "导入的日志文件")
 }
 
 func initConfig() {

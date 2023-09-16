@@ -45,8 +45,7 @@ func CreateDateDir(folderPath string) (dirPath string) {
 	return folderPath
 }
 
-func readString(filename string) {
-	//f, err := os.Open("/Users/chentao/Downloads/down.txt")
+func ReadString(filename string) {
 	f, err := os.Open(filename)
 	if err != nil {
 		panic(err)
@@ -62,8 +61,20 @@ func readString(filename string) {
 
 		if data != "" {
 			fmt.Println(data)
-			// 写入导redis内
-			//redis.SAdd(service.CacheKey, data)
 		}
+	}
+}
+
+func ReadLine(filename string) {
+	f, err := os.Open(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	fileScanner := bufio.NewScanner(f)
+	fileScanner.Split(bufio.ScanLines)
+	for fileScanner.Scan() {
+		fmt.Println(fileScanner.Text())
 	}
 }

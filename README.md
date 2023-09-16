@@ -5,7 +5,7 @@
 功能包括：
 - 扫描制定目录的文件包括子目录，如扫描下载目录的所有文件：`./scan start ~/Download`
 - 将所有扫描结果导出 `./scan export`
-- 将导出的文件导入到程序中 `./scan load`
+- 将导出的文件导入到程序中 `./scan load -f {file}`
 - 从扫描记录中搜索文件。模糊查询 `./scan find {filenmae}`
 - `./scan clean` 从记录中清理掉指定的文件类型，配置文件中指定
 
