@@ -1,5 +1,10 @@
 Dir: "$HOME/scanLog/"
-FilterType: "js,jpg,jpeg,png"
+#FilterType: "js,jpg,jpeg,png"
+FilterType:
+  - "js"
+  - "jpg"
+  - "jpeg"
+  - "png"
 Cache:
   Addr: "localhost:6379"
   Password: ""

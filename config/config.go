@@ -7,8 +7,8 @@ import (
 )
 
 type Config struct {
-	Dir        string // 保存日志文件的路径，不含文件
-	FilterType string // 需要过滤掉的文件类型，多个之间逗号分隔
+	Dir        string   // 保存日志文件的路径，不含文件
+	FilterType []string // 需要过滤掉的文件类型，多个之间逗号分隔
 	Cache      *Cache
 }
 
@@ -37,5 +37,6 @@ func InitConf() {
 		panic(fmt.Errorf("unmarshal conf failed, err:%s \n", err))
 	}
 
+	// 注册redis
 	mredis.NewRedis(Conf.Cache.Addr, Conf.Cache.Password, Conf.Cache.DB)
 }
