@@ -38,5 +38,9 @@ func InitConf() {
 	}
 
 	// 注册redis
+	fmt.Println(Conf.Cache)
+	if Conf.Cache == nil {
+		panic("redis 配置异常")
+	}
 	mredis.NewRedis(Conf.Cache.Addr, Conf.Cache.Password, Conf.Cache.DB)
 }

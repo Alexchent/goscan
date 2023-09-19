@@ -24,6 +24,12 @@ func NewRedis(addr string, password string, db int) {
 		Password: password, // no password set
 		DB:       db,       // use default DB
 	})
+
+	_, err := Client.Ping(ctx).Result()
+	if err != nil {
+		//fmt.Println("redis 连接失败")
+		panic("redis 连接失败")
+	}
 }
 
 func Get(key string) (val string) {
