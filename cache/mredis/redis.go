@@ -10,19 +10,20 @@ import (
 var Client *redis.Client
 var ctx = context.Background()
 
-func init() {
-	Client = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
+//func init() {
+//	Client = redis.NewClient(&redis.Options{
+//		Addr:     "localhost:16379",
+//		Password: "", // no password set
+//		DB:       0,  // use default DB
+//	})
+//}
 
-	//opt, err := redis.ParseURL("redis://<user>:<pass>@localhost:6379/<db>")
-	//if err != nil {
-	//    panic(err)
-	//}
-	//
-	//Client := redis.NewClient(opt)
+func NewRedis(addr string, password string, db int) {
+	Client = redis.NewClient(&redis.Options{
+		Addr:     addr,
+		Password: password, // no password set
+		DB:       db,       // use default DB
+	})
 }
 
 func Get(key string) (val string) {

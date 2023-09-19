@@ -24,5 +24,6 @@ var versionCmd = &cobra.Command{
 		//fmt.Println("license:", viper.Get("license"))
 		fmt.Println(mconf.Conf.Dir)
 		fmt.Println(mconf.Conf.FilterType)
+		fmt.Println(mconf.Conf.Cache)
 	},
 }

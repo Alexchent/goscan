@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/Alexchent/goscan/config"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -35,6 +36,8 @@ func init() {
 	// 绑定到变量 userLicense
 	// --license=MIT 或 -l=license
 	rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "许可证")
+
+	config.InitConf()
 }
 
 func initConfig() {
