@@ -2,6 +2,8 @@
 
 利用corba编写的本地文件扫描程序
 
+程序依赖redis，请先自行[安装redis](https://redis.io/docs/getting-started/installation/)
+
 功能包括：
 - 扫描制定目录的文件包括子目录，如扫描下载目录的所有文件：`./scan start ~/Download`
 - 将所有扫描结果导出 `./scan export`
