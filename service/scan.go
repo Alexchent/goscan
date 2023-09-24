@@ -34,7 +34,7 @@ func WriteToFile(filePath string) {
 			ignore := false
 			for _, v := range mconf.Conf.FilterType {
 				if strings.HasSuffix(fileName, v) {
-					log.Println("忽略文件：", fileName)
+					//log.Println("忽略文件：", fileName)
 					ignore = true
 				}
 			}
