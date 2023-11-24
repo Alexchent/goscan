@@ -4,6 +4,7 @@ import (
 	"fmt"
 	mconf "github.com/Alexchent/goscan/config"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func init() {
@@ -17,7 +18,7 @@ var versionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("当前版本是：v1.0.0")
 
-		//fmt.Println(viper.AllKeys())
+		fmt.Println(viper.AllKeys())
 		//fmt.Println("userLicense:", userLicense)
 		//fmt.Println("author:", viper.Get("author"))
 		//fmt.Println("useviper:", viper.Get("useviper"))
