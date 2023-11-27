@@ -1,8 +1,6 @@
 package service
 
 import (
-	"fmt"
-	"github.com/Alexchent/goscan/cache/mredis"
 	mconf "github.com/Alexchent/goscan/config"
 	myFile "github.com/Alexchent/goscan/file"
 	"log"
@@ -10,17 +8,14 @@ import (
 	"strings"
 )
 
-const SaveDir = "/scanLog/"
-const SavePath = "have_save_file_%d.txt"
-const CacheKey = "have_save_file"
-const CacheKeyMd5 = "have_save_file_md5"
+// FileList map的key是文件的md5，value是文件的路径
+var FileList = make(map[string][]string)
 
-func WriteToFile(filePath string) {
+func Search(filePath string) {
 	fileInfoList, err := os.ReadDir(filePath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	//fmt.Println("正在扫描：", filePath)
 
 	for i := range fileInfoList {
 		fileName := fileInfoList[i].Name()
@@ -30,7 +25,6 @@ func WriteToFile(filePath string) {
 			if fileInfoList[i].Name() == ".DS_Store" {
 				continue
 			}
-
 			// 判断是否是忽略的文件类型
 			ignore := false
 			for _, v := range mconf.Conf.FilterType {
@@ -44,12 +38,20 @@ func WriteToFile(filePath string) {
 			}
 
 			filename := filePath + "/" + fileName
-
-			// 保存到redis成功，说明是新的文件
-			if mredis.SAdd(CacheKey, filename) == 1 {
-				fmt.Println("发现新的文件：", filename)
-				myFile.AppendContent("have_save_file.txt", filename)
+			fileMd5 := myFile.GetFileMd5(filename)
+			// 判断文件是否存在
+			if _, ok := FileList[fileMd5]; ok {
+				FileList[fileMd5] = append(FileList[fileMd5], filename)
+			} else {
+				FileList[fileMd5] = []string{filename}
 			}
+			// 保存到redis成功，说明是新的文件
+			//if mredis.SAdd(CacheKeyMd5, fileMd5) == 1 {
+			//	fmt.Println("发现新的文件：", filename)
+			//	myFile.AppendContent("history_file.txt", fileMd5+"/t"+filename)
+			//} else {
+			//	myFile.AppendContent("same_file.txt", fileMd5+"/t"+filename)
+			//}
 		}
 	}
 }
