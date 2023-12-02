@@ -2,9 +2,9 @@ Dir: "$HOME/scanLog/"
 #FilterType: "js,jpg,jpeg,png"
 FilterType:
   - "js"
-  - "jpg"
-  - "jpeg"
-  - "png"
+  - "torrent"
+  - "downloading"
+  - "tiff"
 Cache:
   Addr: "localhost:6379"
   Password: ""

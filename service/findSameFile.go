@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	mconf "github.com/Alexchent/goscan/config"
 	myFile "github.com/Alexchent/goscan/file"
 	"log"
@@ -19,8 +20,11 @@ func Search(filePath string) {
 
 	for i := range fileInfoList {
 		fileName := fileInfoList[i].Name()
+		if fileName == ".git" {
+			continue
+		}
 		if fileInfoList[i].IsDir() {
-			WriteToFile(filePath + "/" + fileName)
+			Search(filePath + "/" + fileName)
 		} else {
 			if fileInfoList[i].Name() == ".DS_Store" {
 				continue
@@ -45,13 +49,23 @@ func Search(filePath string) {
 			} else {
 				FileList[fileMd5] = []string{filename}
 			}
-			// 保存到redis成功，说明是新的文件
-			//if mredis.SAdd(CacheKeyMd5, fileMd5) == 1 {
-			//	fmt.Println("发现新的文件：", filename)
-			//	myFile.AppendContent("history_file.txt", fileMd5+"/t"+filename)
-			//} else {
-			//	myFile.AppendContent("same_file.txt", fileMd5+"/t"+filename)
-			//}
+		}
+	}
+}
+
+func GetSame() {
+	//fmt.Println(FileList)
+	for k, v := range FileList {
+		if len(v) > 1 {
+			fmt.Println("发现相同文件：", k)
+			myFile.AppendContent("same_file.txt", k)
+			for _, v := range v {
+				myFile.AppendContent("same_file.txt", "\t"+v)
+			}
+		}
+
+		for _, v := range v {
+			myFile.AppendContent("history_file.txt", k+"\t"+v)
 		}
 	}
 }

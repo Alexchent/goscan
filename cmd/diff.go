@@ -51,6 +51,8 @@ var diffCmd = &cobra.Command{
 			path = "/Users/chentao/Downloads"
 		}
 		scan.Search(path)
+
+		scan.GetSame()
 	},
 }
 
