@@ -6,6 +6,8 @@ import (
 	myFile "github.com/Alexchent/goscan/file"
 	"log"
 	"os"
+	"os/exec"
+	"path"
 	"strings"
 )
 
@@ -55,17 +57,37 @@ func Search(filePath string) {
 
 func GetSame() {
 	//fmt.Println(FileList)
+	same, _ := os.OpenFile("same_file.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	//history, _ := os.OpenFile("history_file.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+
 	for k, v := range FileList {
 		if len(v) > 1 {
-			fmt.Println("发现相同文件：", k)
-			myFile.AppendContent("same_file.txt", k)
+			//fmt.Println("发现相同文件：", k)
+			//myFile.AppendContent("same_file.txt", k)
+			same.WriteString(k + "\n")
 			for _, v := range v {
-				myFile.AppendContent("same_file.txt", "\t"+v)
+				same.WriteString("\t" + v + "\n")
+				//myFile.AppendContent("same_file.txt", "\t"+v)
 			}
 		}
+		//for _, v := range v {
+		//	history.WriteString(k + "\t" + v + "\n")
+		//}
+	}
+}
 
-		for _, v := range v {
-			myFile.AppendContent("history_file.txt", k+"\t"+v)
+func RemoveSameFile() {
+	for _, v := range FileList {
+		if len(v) > 1 {
+			// 保留第一个文件，删除其他文件
+			for _, v := range v[1:] {
+				fmt.Println(v)
+				cmd := exec.Command("mv", v, "/Users/chentao/same/"+path.Base(v))
+				err := cmd.Run()
+				if err != nil {
+					log.Printf("rename %s failed: %v", v, err)
+				}
+			}
 		}
 	}
 }

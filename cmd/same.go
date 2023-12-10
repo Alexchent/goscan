@@ -54,6 +54,8 @@ var sameCmd = &cobra.Command{
 
 		// 输出重复文件到txt中
 		scan.GetSame()
+
+		scan.RemoveSameFile()
 	},
 }
 
