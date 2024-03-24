@@ -44,7 +44,7 @@ var exportCmd = &cobra.Command{
 		myFile.CreateDateDir(saveDir)
 
 		var data []string
-		filename := fmt.Sprintf(saveDir+scan.SavePath, time.Now().Unix())
+		filename := fmt.Sprintf(saveDir+"/"+scan.SavePath, time.Now().Unix())
 
 		data = mredis.SMembers(scan.CacheKey)
 		// 过滤掉换行符

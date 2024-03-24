@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-const SaveDir = "/scanLog/"
+const SaveDir = "/scanLog"
 const SavePath = "have_save_file_%d.txt"
 const CacheKey = "have_save_file"
 const CacheKeyMd5 = "have_save_file_md5"
