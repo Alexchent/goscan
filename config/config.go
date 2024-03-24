@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Alexchent/goscan/cache/mredis"
 	"github.com/spf13/viper"
+	"os"
 )
 
 type Config struct {
@@ -21,8 +22,9 @@ type Cache struct {
 var Conf = &Config{}
 
 func InitConf() {
-	//u, _ := os.UserHomeDir()
-	//viper.AddConfigPath(u)
+	u, _ := os.UserHomeDir()
+	// 同时配置多个配置文件路径
+	viper.AddConfigPath(u)
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("./config/")
 	viper.SetConfigName("scan")
