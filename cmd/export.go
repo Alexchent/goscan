@@ -16,6 +16,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var output string
+
 // exportCmd represents the export command
 var exportCmd = &cobra.Command{
 	Use:   "export",
@@ -24,15 +26,18 @@ var exportCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		start := time.Now()
 		defer fmt.Println("文件导出完成，用时：", time.Since(start))
+		var saveDir string
 
-		dir, err := os.UserHomeDir()
-		if err != nil {
-			return
-		}
-		saveDir := dir + scan.SaveDir
-		if mconf.Conf.Dir != "" {
+		if output != "" {
+			saveDir = output
+		} else if mconf.Conf.Dir != "" {
 			saveDir = mconf.Conf.Dir
-			//fmt.Println("保存文件路径", mconf.Conf.Dir)
+		} else {
+			dir, err := os.UserHomeDir()
+			if err != nil {
+				return
+			}
+			saveDir = dir + scan.SaveDir
 		}
 		fmt.Println("导出文件的路径:", saveDir)
 
@@ -50,5 +55,6 @@ var exportCmd = &cobra.Command{
 }
 
 func init() {
+	exportCmd.Flags().StringVarP(&output, "output", "o", "", "导出文件路径")
 	rootCmd.AddCommand(exportCmd)
 }

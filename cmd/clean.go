@@ -51,14 +51,6 @@ var cleanCmd = &cobra.Command{
 					fmt.Println("过滤掉：", v)
 					mredis.SRem(key, v)
 				}
-			} else {
-				//if strings.HasSuffix(v, "js") ||
-				//	strings.HasSuffix(v, "torrent") ||
-				//	strings.HasSuffix(v, "localized") ||
-				//	strings.HasSuffix(v, "jpeg") {
-				//	fmt.Println("过滤掉:", v)
-				//	mredis.SRem(key, v)
-				//}
 			}
 		}
 	},

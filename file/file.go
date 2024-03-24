@@ -13,6 +13,7 @@ import (
 func AppendContent(filename, content string) {
 	//filename := fmt.Sprintf(SavePath, time.Now().Format("060102"))
 	fd, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	defer fd.Close()
 	if err != nil {
 		// 打开文件失败处理
 		log.Fatal(err.Error())

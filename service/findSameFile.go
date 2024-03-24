@@ -45,6 +45,7 @@ func Search(filePath string) {
 
 			filename := filePath + "/" + fileName
 			fileMd5 := myFile.GetFileMd5(filename)
+			fmt.Println(filename)
 			// 判断文件是否存在
 			if _, ok := FileList[fileMd5]; ok {
 				FileList[fileMd5] = append(FileList[fileMd5], filename)
@@ -81,7 +82,7 @@ func RemoveSameFile() {
 		if len(v) > 1 {
 			// 保留第一个文件，删除其他文件
 			for _, v := range v[1:] {
-				fmt.Println(v)
+				fmt.Println("remove:\t" + v)
 				cmd := exec.Command("mv", v, "/Users/chentao/same/"+path.Base(v))
 				err := cmd.Run()
 				if err != nil {

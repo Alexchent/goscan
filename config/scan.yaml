@@ -1,4 +1,4 @@
-Dir: "$HOME/scanLog/"
+Dir: "./scanLog/"  # 默认HOME目录
 #FilterType: "js,jpg,jpeg,png"
 FilterType:
   - "js"
