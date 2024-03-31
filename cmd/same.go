@@ -22,12 +22,14 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
+	fmt "fmt"
 	mconf "github.com/Alexchent/goscan/config"
 	scan "github.com/Alexchent/goscan/service"
 	"github.com/spf13/cobra"
 	"time"
 )
+
+var path string
 
 // startCmd represents the start command
 var sameCmd = &cobra.Command{
@@ -40,25 +42,20 @@ var sameCmd = &cobra.Command{
 
 		fmt.Println("ignore:", mconf.Conf.FilterType)
 
-		var path string
-		fmt.Printf("请输入要扫描的目录:\n")
+		if path == "" {
+			//var path string
+			fmt.Printf("请输入要扫描的目录:\n")
+			_, _ = fmt.Scan(&path)
+		}
 
-		_, err := fmt.Scan(&path)
-		if err != nil {
-			return
-		}
-		if path == "" || path == "/" {
-			path = "/Users/chentao/Downloads"
-		}
 		scan.Search(path)
-
 		// 输出重复文件到txt中
 		scan.GetSame()
-
 		scan.RemoveSameFile()
 	},
 }
 
 func init() {
+	sameCmd.Flags().StringVarP(&path, "dir", "d", "", "需要扫描的目录")
 	rootCmd.AddCommand(sameCmd)
 }

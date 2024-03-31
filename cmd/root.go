@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/Alexchent/goscan/config"
 	"github.com/spf13/cobra"
 )
@@ -40,6 +39,5 @@ func initConfig() {
 	if cfgFile == "" {
 		cfgFile = "./scan.yaml"
 	}
-	fmt.Println(cfgFile)
 	config.InitConf(cfgFile)
 }

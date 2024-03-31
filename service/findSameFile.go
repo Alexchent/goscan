@@ -22,15 +22,9 @@ func Search(filePath string) {
 
 	for i := range fileInfoList {
 		fileName := fileInfoList[i].Name()
-		if fileName == ".git" {
-			continue
-		}
 		if fileInfoList[i].IsDir() {
 			Search(filePath + "/" + fileName)
 		} else {
-			if fileInfoList[i].Name() == ".DS_Store" {
-				continue
-			}
 			// 判断是否是忽略的文件类型
 			ignore := false
 			for _, v := range mconf.Conf.FilterType {
