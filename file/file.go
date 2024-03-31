@@ -10,21 +10,6 @@ import (
 	"strings"
 )
 
-func AppendContent(filename, content string) {
-	//filename := fmt.Sprintf(SavePath, time.Now().Format("060102"))
-	fd, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-	defer fd.Close()
-	if err != nil {
-		// 打开文件失败处理
-		log.Fatal(err.Error())
-	} else {
-		//buf := []byte(content)
-		//fd.Write(buf)
-		fd.WriteString(content + "\n")
-	}
-
-}
-
 // CreateDateDir basePath是固定目录路径
 func CreateDateDir(folderPath string) (dirPath string) {
 	//folderName := time.Now().Format("2006-01-02")

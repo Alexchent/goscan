@@ -5,6 +5,7 @@ FilterType:
   - "torrent"
   - "downloading"
   - "tiff"
+  - "DS_Store"
 Cache:
   Addr: "localhost:6379"
   Password: ""

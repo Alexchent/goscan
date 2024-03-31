@@ -24,7 +24,6 @@ package cmd
 import (
 	"fmt"
 	"github.com/Alexchent/goscan/cache/mredis"
-	scan "github.com/Alexchent/goscan/service"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -38,7 +37,7 @@ var cleanCmd = &cobra.Command{
 	Short: "清理掉指定的文件类型",
 	Long:  `清理掉指定的文件类型`,
 	Run: func(cmd *cobra.Command, args []string) {
-		key := scan.CacheKey
+		key := CacheKey
 		val := mredis.SMembers(key)
 		for _, v := range val {
 			newv := strings.TrimRight(v, "\n")

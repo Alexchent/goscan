@@ -8,7 +8,6 @@ import (
 	"github.com/Alexchent/goscan/cache/mredis"
 	mconf "github.com/Alexchent/goscan/config"
 	myFile "github.com/Alexchent/goscan/file"
-	scan "github.com/Alexchent/goscan/service"
 	"os"
 	"strings"
 	"time"
@@ -33,23 +32,25 @@ var exportCmd = &cobra.Command{
 		} else if mconf.Conf.Dir != "" {
 			saveDir = mconf.Conf.Dir
 		} else {
-			dir, err := os.UserHomeDir()
-			if err != nil {
-				return
-			}
-			saveDir = dir + scan.SaveDir
+			dir, _ := os.UserHomeDir()
+			saveDir = dir + SaveDir
 		}
 		fmt.Println("导出文件的路径:", saveDir)
 
 		myFile.CreateDateDir(saveDir)
 
 		var data []string
-		filename := fmt.Sprintf(saveDir+"/"+scan.SavePath, time.Now().Unix())
+		filename := fmt.Sprintf(saveDir+"/"+SavePath, time.Now().Unix())
+		fd, _ := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 
-		data = mredis.SMembers(scan.CacheKey)
+		data = mredis.SMembers(CacheKey)
 		// 过滤掉换行符
 		for _, v := range data {
-			myFile.AppendContent(filename, strings.Trim(v, "\n"))
+			_, err := fd.WriteString(strings.Trim(v, "\n"))
+			if err != nil {
+				panic("文件写失败：" + v)
+				return
+			}
 		}
 	},
 }

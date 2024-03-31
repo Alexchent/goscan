@@ -4,16 +4,25 @@ import (
 	"fmt"
 	"github.com/Alexchent/goscan/cache/mredis"
 	mconf "github.com/Alexchent/goscan/config"
-	myFile "github.com/Alexchent/goscan/file"
 	"log"
 	"os"
 	"strings"
+	"sync"
 )
 
-const SaveDir = "/scanLog"
-const SavePath = "have_save_file_%d.txt"
 const CacheKey = "have_save_file"
-const CacheKeyMd5 = "have_save_file_md5"
+
+// fd 小写不对外
+var fd *os.File
+
+func init() {
+	var once sync.Once
+	once.Do(func() {
+		filename := "have_save_file.txt"
+		fmt.Println("打开文件\t" + filename)
+		fd, _ = os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	})
+}
 
 func WriteToFile(filePath string) {
 	fileInfoList, err := os.ReadDir(filePath)
@@ -27,15 +36,10 @@ func WriteToFile(filePath string) {
 		if fileInfoList[i].IsDir() {
 			WriteToFile(filePath + "/" + fileName)
 		} else {
-			if fileInfoList[i].Name() == ".DS_Store" {
-				continue
-			}
-
 			// 判断是否是忽略的文件类型
 			ignore := false
 			for _, v := range mconf.Conf.FilterType {
 				if strings.HasSuffix(fileName, v) {
-					//log.Println("忽略文件：", fileName)
 					ignore = true
 				}
 			}
@@ -44,11 +48,15 @@ func WriteToFile(filePath string) {
 			}
 
 			filename := filePath + "/" + fileName
-
 			// 保存到redis成功，说明是新的文件
 			if mredis.SAdd(CacheKey, filename) == 1 {
 				fmt.Println("发现新的文件：", filename)
-				myFile.AppendContent("have_save_file.txt", filename)
+				// myFile.AppendContent("have_save_file.txt", filename)
+				_, err := fd.WriteString(filename)
+				if err != nil {
+					panic(filename + "\t文件写失败")
+					return
+				}
 			}
 		}
 	}

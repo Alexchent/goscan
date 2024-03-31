@@ -5,6 +5,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const SaveDir = "/scanLog"
+const SavePath = "have_save_file_%d.txt"
+const CacheKey = "have_save_file"
+const CacheKeyMd5 = "have_save_file_md5"
+
 var (
 	// Used for flags.
 	cfgFile     string
