@@ -1,11 +1,9 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/Alexchent/goscan/config"
-	"os"
-
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -26,36 +24,22 @@ func Execute() error {
 }
 
 // 绑定参数示例
-// go run main.go version --license=MIT 等同于 go run main.go version -l=MIT
+// go run main.go -c=./scan.yaml
 func init() {
-	cobra.OnInitialize(initConfig)
 
 	// 标志可以是 "persistent" 的，这意味着该标志将可用于分配给它的命令以及该命令下的每个命令。对于全局标志，将标志分配为根上的持久标志。
-	// --config="/config/scan/.cobra.yaml"
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "./scan.yaml", "config file (default is $HOME/.cobra.yaml)")
 	// 绑定到变量 userLicense
 	// --license=MIT 或 -l=license
 	rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "许可证")
 
-	config.InitConf()
+	cobra.OnInitialize(initConfig)
 }
 
 func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
-		// Search config in home directory with name ".cobra" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigType("yaml")
-		viper.SetConfigName(".cobra")
+	if cfgFile == "" {
+		cfgFile = "./scan.yaml"
 	}
-
-	viper.AutomaticEnv()
-
-	viper.ReadInConfig()
+	fmt.Println(cfgFile)
+	config.InitConf(cfgFile)
 }

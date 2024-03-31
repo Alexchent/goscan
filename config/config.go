@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/Alexchent/goscan/cache/mredis"
 	"github.com/spf13/viper"
-	"os"
 )
 
 type Config struct {
@@ -21,15 +20,8 @@ type Cache struct {
 
 var Conf = &Config{}
 
-func InitConf() {
-	u, _ := os.UserHomeDir()
-	// 同时配置多个配置文件路径
-	viper.AddConfigPath(u)
-	viper.AddConfigPath(".")
-	viper.AddConfigPath("./config/")
-	viper.SetConfigName("scan")
-	viper.SetConfigType("yaml")
-	//viper.SetConfigFile(u + "/scan.yaml") // 指定配置文件路径
+func InitConf(conf string) {
+	viper.SetConfigFile(conf)
 	err := viper.ReadInConfig() // 读取配置信息
 	if err != nil {             // 读取配置信息失败
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
