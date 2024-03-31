@@ -50,13 +50,14 @@ var sameCmd = &cobra.Command{
 		// 输出重复文件到txt中
 		//scan.GetSame()
 		fmt.Println("记录扫描文件 start")
-		scan.LogSameFile()
+		same := scan.LogSameFile()
 		fmt.Println("记录扫描文件 end")
-
-		//fmt.Println("执行删除操作 start")
-		//scan.RemoveSameFile()
-		//fmt.Println("执行删除操作 end")
-
+		if same == nil {
+			return
+		}
+		fmt.Println("执行删除操作 start")
+		scan.RemoveSameFile(same)
+		fmt.Println("执行删除操作 end")
 	},
 }
 
