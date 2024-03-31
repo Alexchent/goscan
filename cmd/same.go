@@ -23,7 +23,6 @@ package cmd
 
 import (
 	fmt "fmt"
-	mconf "github.com/Alexchent/goscan/config"
 	scan "github.com/Alexchent/goscan/service"
 	"github.com/spf13/cobra"
 	"time"
@@ -38,10 +37,7 @@ var sameCmd = &cobra.Command{
 		start := time.Now()
 		defer fmt.Println("扫描完成，耗时：", time.Since(start))
 
-		fmt.Println("ignore:", mconf.Conf.FilterType)
-
 		if path == "" {
-			//var path string
 			fmt.Printf("请输入要扫描的目录:\n")
 			_, _ = fmt.Scan(&path)
 		}
