@@ -40,20 +40,23 @@ var startCmd = &cobra.Command{
 
 		fmt.Println("ignore:", mconf.Conf.FilterType)
 
-		var path string
-		fmt.Printf("请输入要扫描的目录:\n")
+		if path == "" {
+			fmt.Printf("请输入要扫描的目录:\n")
+			_, err := fmt.Scan(&path)
+			if err != nil {
+				return
+			}
+			if path == "/" {
+				path = "/Users/chentao/Downloads"
+			}
+		}
 
-		_, err := fmt.Scan(&path)
-		if err != nil {
-			return
-		}
-		if path == "" || path == "/" {
-			path = "/Users/chentao/Downloads"
-		}
+		fmt.Println("开始扫描：", path)
 		scan.WriteToFile(path)
 	},
 }
 
 func init() {
+	startCmd.Flags().StringVarP(&path, "dir", "d", "", "需要扫描的目录")
 	rootCmd.AddCommand(startCmd)
 }

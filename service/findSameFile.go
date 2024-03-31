@@ -1,14 +1,13 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
-	mconf "github.com/Alexchent/goscan/config"
 	myFile "github.com/Alexchent/goscan/file"
 	"log"
 	"os"
 	"os/exec"
 	"path"
-	"strings"
 )
 
 // FileList map的key是文件的md5，value是文件的路径
@@ -25,18 +24,6 @@ func Search(filePath string) {
 		if fileInfoList[i].IsDir() {
 			Search(filePath + "/" + fileName)
 		} else {
-			// 判断是否是忽略的文件类型
-			ignore := false
-			for _, v := range mconf.Conf.FilterType {
-				if strings.HasSuffix(fileName, v) {
-					//log.Println("忽略文件：", fileName)
-					ignore = true
-				}
-			}
-			if ignore {
-				continue
-			}
-
 			filename := filePath + "/" + fileName
 			fileMd5 := myFile.GetFileMd5(filename)
 			fmt.Println(filename)
@@ -48,6 +35,24 @@ func Search(filePath string) {
 			}
 		}
 	}
+}
+
+type list []string
+
+func LogSameFile() {
+	//marshal, err := json.Marshal(FileList)
+	more := make(map[string]list)
+	for k, v := range FileList {
+		if len(v) > 1 {
+			more[k] = v
+		}
+	}
+	marshal, err := json.MarshalIndent(more, "", "     ")
+	if err != nil {
+		return
+	}
+	same, _ := os.OpenFile("same_file.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	same.Write(marshal)
 }
 
 func GetSame() {

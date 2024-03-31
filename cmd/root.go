@@ -9,6 +9,7 @@ var (
 	// Used for flags.
 	cfgFile     string
 	userLicense string
+	path        string
 
 	rootCmd = &cobra.Command{
 		Use:   "cobra-cli",
@@ -27,7 +28,7 @@ func Execute() error {
 func init() {
 
 	// 标志可以是 "persistent" 的，这意味着该标志将可用于分配给它的命令以及该命令下的每个命令。对于全局标志，将标志分配为根上的持久标志。
-	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "./scan.yaml", "config file (default is $HOME/.cobra.yaml)")
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "./scan.yaml", "config file")
 	// 绑定到变量 userLicense
 	// --license=MIT 或 -l=license
 	rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "许可证")

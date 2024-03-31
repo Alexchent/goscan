@@ -29,8 +29,6 @@ import (
 	"time"
 )
 
-var path string
-
 // startCmd represents the start command
 var sameCmd = &cobra.Command{
 	Use:   "same",
@@ -50,8 +48,15 @@ var sameCmd = &cobra.Command{
 
 		scan.Search(path)
 		// 输出重复文件到txt中
-		scan.GetSame()
-		scan.RemoveSameFile()
+		//scan.GetSame()
+		fmt.Println("记录扫描文件 start")
+		scan.LogSameFile()
+		fmt.Println("记录扫描文件 end")
+
+		//fmt.Println("执行删除操作 start")
+		//scan.RemoveSameFile()
+		//fmt.Println("执行删除操作 end")
+
 	},
 }
 
