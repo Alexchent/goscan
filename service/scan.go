@@ -19,7 +19,7 @@ func init() {
 	var once sync.Once
 	once.Do(func() {
 		filename := "have_save_file.txt"
-		fmt.Println("打开文件\t" + filename)
+		//fmt.Println("打开文件\t" + filename)
 		fd, _ = os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	})
 }

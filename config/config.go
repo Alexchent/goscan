@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Alexchent/goscan/cache/mredis"
 	"github.com/spf13/viper"
+	"os"
 )
 
 type Config struct {
@@ -21,7 +22,16 @@ type Cache struct {
 var Conf = &Config{}
 
 func InitConf(conf string) {
-	viper.SetConfigFile(conf)
+	if len(conf) > 0 {
+		fmt.Println("配置文件：" + conf)
+		viper.SetConfigFile(conf)
+	} else {
+		dir, _ := os.UserHomeDir()
+		viper.AddConfigPath(dir)
+		viper.SetConfigName("scan")
+		viper.SetConfigType("yaml")
+		fmt.Println("配置文件：" + dir + "/scan.yaml")
+	}
 	err := viper.ReadInConfig() // 读取配置信息
 	if err != nil {             // 读取配置信息失败
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))

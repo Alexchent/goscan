@@ -12,8 +12,9 @@ import (
 
 // CreateDateDir basePath是固定目录路径
 func CreateDateDir(folderPath string) (dirPath string) {
-	//folderName := time.Now().Format("2006-01-02")
-	//folderPath := filepath.Join(basePath, folderName)
+	if folderPath == "" {
+		return ""
+	}
 	if _, err := os.Stat(folderPath); os.IsNotExist(err) {
 		// 必须分成两步
 		// 先创建文件夹
