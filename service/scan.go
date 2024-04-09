@@ -52,7 +52,7 @@ func WriteToFile(filePath string) {
 			if mredis.SAdd(CacheKey, filename) == 1 {
 				fmt.Println("发现新的文件：", filename)
 				// myFile.AppendContent("have_save_file.txt", filename)
-				_, err := fd.WriteString(filename)
+				_, err := fd.WriteString(filename + "\n")
 				if err != nil {
 					panic(filename + "\t文件写失败")
 					return
