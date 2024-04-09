@@ -25,6 +25,8 @@ import (
 	"fmt"
 	mconf "github.com/Alexchent/goscan/config"
 	scan "github.com/Alexchent/goscan/service"
+	"github.com/gookit/color"
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"time"
 )
@@ -47,11 +49,15 @@ var startCmd = &cobra.Command{
 				return
 			}
 			if path == "/" {
-				path = "/Users/chentao/Downloads"
+				dir, err := homedir.Dir()
+				if err != nil {
+					panic(err)
+				}
+				path = dir + "/Downloads"
 			}
 		}
 
-		fmt.Println("开始扫描：", path)
+		color.HiGreen.Println("开始扫描：", path)
 		scan.WriteToFile(path)
 	},
 }

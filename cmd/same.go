@@ -51,9 +51,9 @@ var sameCmd = &cobra.Command{
 		if same == nil {
 			return
 		}
-		fmt.Println("执行删除操作 start")
-		scan.RemoveSameFile(same)
-		fmt.Println("执行删除操作 end")
+		//fmt.Println("执行删除操作 start")
+		//scan.RemoveSameFile(same)
+		//fmt.Println("执行删除操作 end")
 	},
 }
 
