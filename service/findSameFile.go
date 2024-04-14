@@ -26,6 +26,10 @@ func Search(filePath string) {
 
 	for i := range fileInfoList {
 		fileName := fileInfoList[i].Name()
+		// 如果是影藏文件，直接跳过
+		if fileName[0] == '.' {
+			continue
+		}
 		if fileInfoList[i].IsDir() {
 			Search(filePath + "/" + fileName)
 		} else {
