@@ -55,9 +55,10 @@ var cleanCmd = &cobra.Command{
 	},
 }
 
+// 后缀
 // go run main clean -c apk
 func init() {
 	// 本地标志, 此处进队cleanCmd有效
-	cleanCmd.Flags().StringVarP(&clear, "clear", "c", "", "需要清理掉的文件类型")
+	cleanCmd.Flags().StringVar(&clear, "suffix", "", "需要清理掉的文件类型")
 	rootCmd.AddCommand(cleanCmd)
 }

@@ -46,7 +46,7 @@ var exportCmd = &cobra.Command{
 		data = mredis.SMembers(CacheKey)
 		// 过滤掉换行符
 		for _, v := range data {
-			_, err := fd.WriteString(strings.Trim(v, "\n"))
+			_, err := fd.WriteString(strings.Trim(v, "\n") + "\n")
 			if err != nil {
 				panic("文件写失败：" + v)
 				return
