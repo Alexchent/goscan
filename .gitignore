@@ -3,3 +3,4 @@ log
 storage
 *.txt
 .DS_Store
+gscan

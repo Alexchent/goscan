@@ -27,7 +27,7 @@ func init() {
 func WriteToFile(filePath string) {
 	fileInfoList, err := os.ReadDir(filePath)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	//fmt.Println("正在扫描：", filePath)
 

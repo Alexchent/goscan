@@ -29,24 +29,33 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var clear string
+var clearSuffix string
+var clearContain string
 
 // cleanCmd represents the clean command
 var cleanCmd = &cobra.Command{
 	Use:   "clean",
-	Short: "清理掉指定的文件类型",
-	Long:  `清理掉指定的文件类型`,
+	Short: "清理掉符合条件的的文件",
+	Long:  `清理掉符合条件的的文件`,
 	Run: func(cmd *cobra.Command, args []string) {
 		key := CacheKey
 		val := mredis.SMembers(key)
 		for _, v := range val {
-			newv := strings.TrimRight(v, "\n")
-			mredis.SRem(key, v)
-			mredis.SAdd(key, newv)
+			//newv := strings.TrimRight(v, "\n")
+			//mredis.SRem(key, v)
+			//mredis.SAdd(key, newv)
 
 			// 按 后缀清理
-			if clear != "" {
-				if strings.HasSuffix(v, clear) {
+			if clearSuffix != "" {
+				if strings.HasSuffix(v, clearSuffix) {
+					fmt.Println("过滤掉：", v)
+					mredis.SRem(key, v)
+				}
+			}
+
+			// 按 后缀清理
+			if clearContain != "" {
+				if strings.Contains(v, clearContain) {
 					fmt.Println("过滤掉：", v)
 					mredis.SRem(key, v)
 				}
@@ -59,6 +68,7 @@ var cleanCmd = &cobra.Command{
 // go run main clean -c apk
 func init() {
 	// 本地标志, 此处进队cleanCmd有效
-	cleanCmd.Flags().StringVar(&clear, "suffix", "", "需要清理掉的文件类型")
+	cleanCmd.Flags().StringVar(&clearSuffix, "suffix", "", "需要清理掉的文件类型")
+	cleanCmd.Flags().StringVar(&clearContain, "contain", "", "包含该值")
 	rootCmd.AddCommand(cleanCmd)
 }
