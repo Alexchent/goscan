@@ -30,14 +30,14 @@ func WriteToFile(filePath string) {
 		log.Println(err)
 	}
 	//fmt.Println("正在扫描：", filePath)
-
-	for i := range fileInfoList {
-		fileName := fileInfoList[i].Name()
+	for _, file := range fileInfoList {
+		fileName := file.Name()
 		// 如果是影藏文件，直接跳过
 		if fileName[0] == '.' {
 			continue
 		}
-		if fileInfoList[i].IsDir() {
+
+		if file.IsDir() {
 			WriteToFile(filePath + "/" + fileName)
 		} else {
 			// 判断是否是忽略的文件类型
@@ -50,17 +50,10 @@ func WriteToFile(filePath string) {
 			if ignore {
 				continue
 			}
-
 			filename := filePath + "/" + fileName
 			// 保存到redis成功，说明是新的文件
 			if mredis.SAdd(CacheKey, filename) == 1 {
-				fmt.Println("发现新的文件：", filename)
-				// myFile.AppendContent("have_save_file.txt", filename)
-				_, err := fd.WriteString(filename + "\n")
-				if err != nil {
-					panic(filename + "\t文件写失败")
-					return
-				}
+				fmt.Println(filename)
 			}
 		}
 	}
