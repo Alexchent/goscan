@@ -6,10 +6,15 @@ import (
 	"path/filepath"
 )
 
-var suffixs []string
+// 后缀
+var suffix map[string]any
 
 func init() {
-	suffixs = []string{".git", ".DS_Store", ".localized", ".gitignore", ".sample"}
+	//suffixs = []string{".git", ".DS_Store", ".localized", ".gitignore", ".sample"}
+	suffix = map[string]any{
+		"git": nil,
+		"jpg": nil,
+	}
 }
 
 func Scale(dir string) error {
@@ -18,40 +23,21 @@ func Scale(dir string) error {
 		if err != nil {
 			return err
 		}
-
 		if !info.IsDir() {
 			//fmt.Println(path)
 			ext := filepath.Ext(path)
-			for _, suffix := range suffixs {
-				if ext == suffix {
-					fmt.Printf("忽略 %s\n", path)
-					continue
-				}
+			_, ok := suffix[ext]
+			if ok {
+				fmt.Printf("忽略 %s\n", path)
+				return err
 			}
-			appendContent(path)
-
+			fmt.Println(path)
 		}
-
 		return nil
 	})
 
 	if err != nil {
-		//fmt.Println(err)
 		return err
 	}
 	return nil
-}
-
-func appendContent(content string) {
-	fd, err := os.OpenFile("a.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-	if err != nil {
-		// 打开文件失败处理
-	} else {
-		content += "\n"
-		buf := []byte(content)
-		_, err := fd.Write(buf)
-		if err != nil {
-			return
-		}
-	}
 }
