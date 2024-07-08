@@ -26,8 +26,16 @@ var duplicateCmd = &cobra.Command{
 		go duplicate.Do(path, ch)
 
 		// 注意只有channel关闭时，才会退出
+		fileList := make(duplicate.FIleList)
 		for f := range ch {
-			fmt.Println(f.MD5, f.FullFileName)
+			//fmt.Println(f.MD5, f.FullFileName)
+			fileList[f.MD5] = append(fileList[f.MD5], f.FullFileName)
+		}
+
+		for _, filename := range fileList {
+			if len(filename) > 1 {
+				fmt.Println(filename)
+			}
 		}
 		fmt.Println("over")
 	},
