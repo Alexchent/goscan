@@ -1,10 +1,9 @@
 package duplicate
 
 import (
-	"fmt"
+	myFile "github.com/Alexchent/goscan/file"
 	"os"
 	"sync"
-	"time"
 )
 
 const (
@@ -18,51 +17,42 @@ type File struct {
 
 type FIleList map[string][]string
 
-func Do(dir string) {
-	start := time.Now()
-	defer fmt.Println("扫描完毕，共耗时：", time.Since(start))
-
-	_, err := os.Stat(dir)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-
-	// stage 1
+func Do(dir string, B chan *File) {
+	// 将文件信息写入channel A
 	A := make(chan string, consumer)
-	wg := sync.WaitGroup{}
-	for i := 0; i < consumer; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for filename := range A {
-				fmt.Println(filename)
-			}
-		}()
-	}
+	//wg.Add(1)
+
+	var pWg sync.WaitGroup
+	pWg.Add(1)
+	go WalkFiles(dir, &pWg, A)
 
 	// 从channel A 读取文件信息，并计算出MD5，以struct形式写入channel B
+	go func() {
+		// 当A关闭时退出
+		for filename := range A {
+			//fmt.Println(filename)
+			B <- &File{
+				FullFileName: filename,
+				MD5:          myFile.GetFileMd5(filename),
+			}
+		}
+		close(B)
+	}()
 
-	// 将文件信息写入channel A
-	wg.Add(1)
-	Stage1(dir, &wg, A)
+	pWg.Wait()
 	close(A)
-
-	wg.Wait()
-	fmt.Println("finish")
-	// 从channel B 读取，写入到 map中
+	return
 }
 
-func Stage1(dir string, wg *sync.WaitGroup, ch chan string) {
+func WalkFiles(dir string, wg *sync.WaitGroup, ch chan string) {
 	defer wg.Done()
 	readDir, err := os.ReadDir(dir)
 	if err != nil {
 		return
 	}
-	nextWg := sync.WaitGroup{}
-	var fileName string
+	var nextWg sync.WaitGroup
 	for _, file := range readDir {
-		fileName = file.Name()
+		fileName := file.Name()
 		// 过滤影藏文件
 		if fileName[0:1] == "." {
 			continue
@@ -71,10 +61,12 @@ func Stage1(dir string, wg *sync.WaitGroup, ch chan string) {
 		fullName := dir + "/" + fileName
 		if file.IsDir() {
 			nextWg.Add(1)
-			Stage1(fullName, &nextWg, ch)
+			go WalkFiles(fullName, &nextWg, ch)
 		} else {
 			ch <- fullName
 		}
 	}
+	// 等待子goroutine结束。关闭channel，通知消费者退出
 	nextWg.Wait()
+	return
 }
