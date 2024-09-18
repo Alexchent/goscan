@@ -7,6 +7,7 @@ import (
 	"github.com/gookit/color"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
+	"strings"
 	"time"
 )
 
@@ -35,7 +36,7 @@ var startCmd = &cobra.Command{
 				path = dir + "/Downloads"
 			}
 		}
-
+		path = strings.TrimRight(path, "/")
 		color.HiGreen.Println("开始扫描：", path)
 		scan.WriteToFile(path)
 	},
