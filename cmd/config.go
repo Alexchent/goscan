@@ -26,8 +26,6 @@ var configCmd = &cobra.Command{
 		myFile.CreateDateDir(outputConf)
 		filename := outputConf + "/scan.yaml"
 
-		//fmt.Println(filename)
-		//return
 		if help.FileIsExist(filename) && cover == false {
 			fmt.Println("配置文件已存在")
 			return

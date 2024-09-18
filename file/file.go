@@ -69,7 +69,7 @@ func ReadLine(filename string) {
 	}
 }
 
-// 生成文件的md5
+// GetFileMd5 生成文件的md5
 func GetFileMd5(filename string) string {
 	file, err := os.Open(filename)
 	if err != nil {

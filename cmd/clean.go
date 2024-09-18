@@ -41,10 +41,6 @@ var cleanCmd = &cobra.Command{
 		key := CacheKey
 		val := mredis.SMembers(key)
 		for _, v := range val {
-			//newv := strings.TrimRight(v, "\n")
-			//mredis.SRem(key, v)
-			//mredis.SAdd(key, newv)
-
 			// 按 后缀清理
 			if clearSuffix != "" {
 				if strings.HasSuffix(v, clearSuffix) {

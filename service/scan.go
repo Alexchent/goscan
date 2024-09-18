@@ -25,6 +25,7 @@ func init() {
 }
 
 func WriteToFile(filePath string) {
+	filePath = strings.TrimRight(filePath, "/")
 	fileInfoList, err := os.ReadDir(filePath)
 	if err != nil {
 		log.Println(err)
