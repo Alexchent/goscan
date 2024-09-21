@@ -4,3 +4,4 @@ storage
 *.txt
 .DS_Store
 gscan
+etc

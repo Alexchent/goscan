@@ -22,16 +22,11 @@ type Cache struct {
 var Conf = &Config{}
 
 func InitConf(conf string) {
-	if len(conf) > 0 {
-		fmt.Println("配置文件：" + conf)
-		viper.SetConfigFile(conf)
-	} else {
+	if len(conf) == 0 {
 		dir, _ := os.UserHomeDir()
-		viper.AddConfigPath(dir)
-		viper.SetConfigName("scan")
-		viper.SetConfigType("yaml")
-		fmt.Println("配置文件：" + dir + "/scan.yaml")
+		conf = dir + "/scan.yaml"
 	}
+	viper.SetConfigFile(conf)
 	err := viper.ReadInConfig() // 读取配置信息
 	if err != nil {             // 读取配置信息失败
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))

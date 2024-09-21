@@ -1,14 +1,15 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/Alexchent/goscan/config"
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 )
 
 const SaveDir = "/scanLog"
 const SavePath = "have_save_file_%d.txt"
 const CacheKey = "have_save_file"
-const CacheKeyMd5 = "have_save_file_md5"
 
 var (
 	// Used for flags.
@@ -30,10 +31,17 @@ func Execute() error {
 // 绑定参数示例
 // go run main.go -c=./scan.yaml
 func init() {
-
 	// 标志可以是 "persistent" 的，这意味着该标志将可用于分配给它的命令以及该命令下的每个命令。对于全局标志，将标志分配为根上的持久标志。
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file")
-
+	if cfgFile == "" {
+		dir, err := homedir.Dir()
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		cfgFile = dir + "/scan.yaml"
+	}
+	fmt.Println("配置文件：" + cfgFile)
 	cobra.OnInitialize(initConfig)
 }
 

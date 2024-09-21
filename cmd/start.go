@@ -19,9 +19,7 @@ var startCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		start := time.Now()
 		defer fmt.Println("扫描完成，耗时：", time.Since(start))
-
 		fmt.Println("ignore:", mconf.Conf.FilterType)
-
 		if path == "" {
 			fmt.Printf("请输入要扫描的目录:\n")
 			_, err := fmt.Scan(&path)
