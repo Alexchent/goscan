@@ -7,6 +7,7 @@ import (
 	"github.com/gookit/color"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
+	"os"
 	"strings"
 	"time"
 )
@@ -26,13 +27,21 @@ var startCmd = &cobra.Command{
 			if err != nil {
 				return
 			}
-			if path == "/" || path == "." {
-				dir, err := homedir.Dir()
-				if err != nil {
-					panic(err)
-				}
-				path = dir + "/Downloads"
+		}
+		if path == "/" || path[0] == '.' {
+			fmt.Println("只允许使用绝对路径或当前路径")
+			dir, err := homedir.Dir()
+			if err != nil {
+				panic(err)
 			}
+			path = dir + "/Downloads"
+		}
+		if path[0] != '/' {
+			getwd, err := os.Getwd()
+			if err != nil {
+				panic("补全路径失败：" + err.Error())
+			}
+			path = getwd + "/" + path
 		}
 		path = strings.TrimRight(path, "/")
 		color.HiGreen.Println("开始扫描：", path)
