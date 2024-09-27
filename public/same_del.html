@@ -103,7 +103,7 @@
 
       return { listItem, collapseDiv };
     }
-    fetch("http://127.0.0.1:8889/resource").then(response => response.json()).then(data=>{
+    fetch("http://127.0.0.1:8889/resource/same_file.json").then(response => response.json()).then(data=>{
       let jsonData = data.data
       for (const key in jsonData) {
         if (jsonData.hasOwnProperty(key)) {
