@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bootstrap demo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+
+<body>
+  <h1>Hello, world!</h1>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+
+  <ul class="list-group">
+  </ul>
+
+  <script>
+    const jsonData = {
+      "oko":[
+        "/Users/chentao02/github/IKonw/小说素材/fd039245d688d43f8794d6f6394dc51b0ef41bd58d2e.webp",
+        "/Users/chentao02/github/IKonw/小说素材/fd039245d688d43f8794d6f6394dc51b0ef41bd58d2e.webp",
+        "/Users/chentao02/github/IKonw/小说素材/fd039245d688d43f8794d6f6394dc51b0ef41bd58d2e.webp"
+      ],
+      "23a6ea32544c55288044341870823478": [
+        "/Users/chentao02/github/IKonw/小说素材/李小冉14-3.jpeg",
+        "/Users/chentao02/github/IKonw/小说素材/李小冉14-3_副本.jpeg"
+      ],
+      "82a9f1ee48b3d7228784b53a814a5c30": [
+        "/Users/chentao02/github/IKonw/小说素材/铁萍姑.webp",
+        "/Users/chentao02/github/IKonw/小说素材/铁萍姑_副本.webp"
+      ],
+      "82a9f1ee48b3d722878814a5c30": [
+          "/Users/chentao02/github/IKonw/小说素材/01e6cf1f790715750103700391991b8203_4610.mp4video.MP4",
+          "/Users/chentao02/github/IKonw/小说素材/01e6cf1f790715750103700391991b8203_4610.mp4video.MP4"
+     ]
+    };
+
+    const listGroup = document.querySelector('.list-group');
+    const deleteSelectedButton = document.getElementById('deleteSelected');
+
+    for (const key in jsonData) {
+      if (jsonData.hasOwnProperty(key)) {
+        const listItem = document.createElement('li');
+        listItem.classList.add('list-group-item');
+        listItem.setAttribute('data-bs-toggle', 'collapse');
+        listItem.setAttribute('href', `#collapse${key}`);
+        listItem.setAttribute('aria-expanded', 'false');
+        listItem.setAttribute('aria-controls', `collapse${key}`);
+        listItem.textContent = key;
+
+        const collapseDiv = document.createElement('div');
+        collapseDiv.classList.add('collapse');
+        collapseDiv.id = `collapse${key}`;
+
+        const files = jsonData[key];
+        for (const fileUrl of files) {
+          if (fileUrl.endsWith('.MP4') || fileUrl.endsWith('.mp4')) {
+            const video = document.createElement('video');
+            video.classList.add('rounded', 'img-fluid');
+            video.width = 320;
+            video.height = 240;
+            video.controls = true;
+            const source = document.createElement('source');
+            source.src = fileUrl;
+            source.type = 'video/mp4';
+            video.appendChild(source);
+            collapseDiv.appendChild(video);
+          } else {
+            const img = document.createElement('img');
+            img.classList.add('rounded', 'img-fluid');
+            img.width = 320;
+            img.height = 240;
+            img.src = fileUrl;
+            collapseDiv.appendChild(img);
+          }
+        }
+
+        listGroup.appendChild(listItem);
+        listGroup.appendChild(collapseDiv);
+      }
+    }
+  </script>
+
+</body>
+
+</html>

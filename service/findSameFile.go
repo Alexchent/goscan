@@ -62,7 +62,7 @@ func LogSameFile() FileList {
 	if err != nil {
 		return nil
 	}
-	same, _ := os.OpenFile("same_file.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	same, _ := os.OpenFile("same_file.json", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	_, _ = same.Write(marshal)
 	return more
 }

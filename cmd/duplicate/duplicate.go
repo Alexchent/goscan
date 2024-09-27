@@ -54,7 +54,7 @@ func WalkFiles(dir string, wg *sync.WaitGroup, ch chan string) {
 	for _, file := range readDir {
 		fileName := file.Name()
 		// 过滤影藏文件
-		if fileName[0:1] == "." {
+		if fileName[0] == '.' {
 			continue
 		}
 		// 按后缀过滤
