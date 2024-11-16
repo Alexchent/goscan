@@ -41,7 +41,6 @@ func init() {
 		}
 		cfgFile = dir + "/.scan.yaml"
 	}
-	fmt.Println("配置文件：" + cfgFile)
 	cobra.OnInitialize(initConfig)
 }
 
