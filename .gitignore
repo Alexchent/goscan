@@ -5,3 +5,4 @@ storage
 .DS_Store
 gscan
 etc
+.scan.yaml

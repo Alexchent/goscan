@@ -6,6 +6,7 @@ import (
 	mconf "github.com/Alexchent/goscan/config"
 	"log"
 	"os"
+	"path"
 	"strings"
 	"sync"
 )
@@ -14,21 +15,24 @@ const CacheKey = "have_save_file"
 
 // fd 小写不对外
 var fd *os.File
+var once sync.Once
 
-func init() {
-	var once sync.Once
+func openLogfile() {
 	once.Do(func() {
-		filename := "have_save_file.txt"
+		filename := "have_save_file.log"
 		fd, _ = os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	})
 }
 
 func WriteToFile(filePath string) {
+	openLogfile()
+
 	filePath = strings.TrimRight(filePath, "/")
 	fileInfoList, err := os.ReadDir(filePath)
 	if err != nil {
 		log.Println(err)
 	}
+
 	//fmt.Println("正在扫描：", filePath)
 	for _, file := range fileInfoList {
 		fileName := file.Name()
@@ -40,20 +44,17 @@ func WriteToFile(filePath string) {
 		if file.IsDir() {
 			WriteToFile(filePath + "/" + fileName)
 		} else {
-			// 判断是否是忽略的文件类型
-			ignore := false
-			for _, v := range mconf.Conf.FilterType {
-				if strings.HasSuffix(fileName, v) {
-					ignore = true
-				}
-			}
-			if ignore {
+			// 忽略指定格式的文件
+			suffix := path.Ext(fileName)[1:]
+			if _, ok := mconf.FilterSuffix[strings.ToLower(suffix)]; ok {
 				continue
 			}
 			filename := filePath + "/" + fileName
+
 			// 保存到redis成功，说明是新的文件
 			if mredis.SAdd(CacheKey, filename) == 1 {
 				fmt.Println(filename)
+				fd.WriteString(filename)
 			}
 		}
 	}

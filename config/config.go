@@ -11,6 +11,7 @@ type Config struct {
 	Dir        string   // 保存日志文件的路径，不含文件
 	FilterType []string // 需要过滤掉的文件类型，多个之间逗号分隔
 	Cache      *Cache
+	LogPath    string
 }
 
 type Cache struct {
@@ -20,11 +21,12 @@ type Cache struct {
 }
 
 var Conf = &Config{}
+var FilterSuffix map[string]struct{}
 
 func InitConf(conf string) {
 	if len(conf) == 0 {
 		dir, _ := os.UserHomeDir()
-		conf = dir + "/scan.yaml"
+		conf = dir + "/.scan.yaml"
 	}
 	viper.SetConfigFile(conf)
 	err := viper.ReadInConfig() // 读取配置信息
@@ -34,6 +36,10 @@ func InitConf(conf string) {
 	// 将读取的配置信息保存至全局变量Conf
 	if err := viper.Unmarshal(Conf); err != nil {
 		panic(fmt.Errorf("unmarshal conf failed, err:%s \n", err))
+	}
+	FilterSuffix = make(map[string]struct{}, 0)
+	for _, suffix := range Conf.FilterType {
+		FilterSuffix[suffix] = struct{}{}
 	}
 
 	// 注册redis
