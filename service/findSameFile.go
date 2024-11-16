@@ -12,13 +12,12 @@ import (
 )
 
 // FileList map的key是文件的md5，value是文件的路径
-type FileList map[string]list
-type list []string
+type FileList map[string][]string
 
 // var listData = make(map[string][]string)
 var listData = make(FileList)
 
-func Search(filePath string) {
+func GroupByFileMD5(filePath string) {
 	fileInfoList, err := os.ReadDir(filePath)
 	if err != nil {
 		log.Fatal(err)
@@ -31,7 +30,7 @@ func Search(filePath string) {
 			continue
 		}
 		if fileInfoList[i].IsDir() {
-			Search(filePath + "/" + fileName)
+			GroupByFileMD5(filePath + "/" + fileName)
 		} else {
 			filename := filePath + "/" + fileName
 			fileMd5 := myFile.GetFileMd5(filename)
@@ -95,4 +94,32 @@ func MD5(str string) string {
 	has := md5.Sum(data)
 	md5str := fmt.Sprintf("%x", has)
 	return md5str
+}
+
+func GroupByFileName(filePath string) {
+	fileInfoList, err := os.ReadDir(filePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for i := range fileInfoList {
+		fileName := fileInfoList[i].Name()
+		// 如果是影藏文件，直接跳过
+		if fileName[0] == '.' {
+			continue
+		}
+		if fileInfoList[i].IsDir() {
+			GroupByFileMD5(filePath + "/" + fileName)
+		} else {
+			filename := filePath + "/" + fileName
+			fileMd5 := myFile.GetFileMd5(filename)
+			fmt.Println(filename)
+			// 判断文件是否存在
+			if _, ok := listData[fileMd5]; ok {
+				listData[fileMd5] = append(listData[fileMd5], filename)
+			} else {
+				listData[fileMd5] = []string{filename}
+			}
+		}
+	}
 }

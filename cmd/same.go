@@ -21,9 +21,9 @@ var sameCmd = &cobra.Command{
 			_, _ = fmt.Scan(&path)
 		}
 
-		scan.Search(path)
+		fmt.Println("开始扫描：" + path)
+		scan.GroupByFileMD5(path)
 		// 输出重复文件到txt中
-		//scan.GetSame()
 		fmt.Println("记录扫描文件 start")
 		same := scan.LogSameFile()
 		fmt.Println("记录扫描文件 end")
