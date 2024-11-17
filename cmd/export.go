@@ -53,14 +53,7 @@ var exportCmd = &cobra.Command{
 				panic("文件写失败：" + v)
 			}
 
-			var fileSize int64
-			stat, err := os.Stat(filename)
-			if err != nil {
-				fileSize = 0
-			} else {
-				fileSize = stat.Size()
-			}
-			model.NewScanFile().Insert(filename, fileSize)
+			model.NewScanFile(saveDir).Insert(filename)
 		}
 	},
 }

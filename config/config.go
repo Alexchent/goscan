@@ -12,6 +12,9 @@ type Config struct {
 	FilterType []string // 需要过滤掉的文件类型，多个之间逗号分隔
 	Cache      *Cache
 	LogPath    string
+	Sqlite     struct {
+		DSN string
+	}
 }
 
 type Cache struct {

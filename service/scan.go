@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Alexchent/goscan/cache/mredis"
 	mconf "github.com/Alexchent/goscan/config"
+	"github.com/Alexchent/goscan/logic"
 	"log"
 	"os"
 	"path"
@@ -32,7 +33,7 @@ func WriteToFile(filePath string) {
 	if err != nil {
 		log.Println(err)
 	}
-
+	svc := logic.NewSaveLogic(*mconf.Conf)
 	//fmt.Println("正在扫描：", filePath)
 	for _, file := range fileInfoList {
 		fileName := file.Name()
@@ -54,12 +55,8 @@ func WriteToFile(filePath string) {
 			// 保存到redis成功，说明是新的文件
 			if mredis.SAdd(CacheKey, filename) == 1 {
 				fmt.Println(filename)
-				fd.WriteString(filename)
-				//stat, err := os.Stat(filename)
-				//if err != nil {
-				//	return
-				//}
-				//model.NewScanFile().Insert(filename, stat.Size())
+				fd.WriteString(filename + "\n")
+				svc.Save(filename)
 			}
 		}
 	}

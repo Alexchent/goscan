@@ -30,19 +30,23 @@ func init() {
 }
 
 type ScanFile interface {
-	Insert(fullFileName string, fileSize int64)
+	Insert(fullFileName string)
+	FindByFullFileName(fullFileName string) *MyFile
+	FindMd5(fileMd5 string) []MyFile
 }
 
 type scanFile struct {
 	db *gorm.DB
 }
 
-func NewScanFile() *scanFile {
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+func NewScanFile(dsn string) *scanFile {
+	if len(dsn) > 0 && dsn[len(dsn)-1] != '/' {
+		dsn += "/"
+	}
+	db, err := gorm.Open(sqlite.Open(dsn+"scan.db"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
-
 	// 迁移 schema
 	db.AutoMigrate(&MyFile{})
 	return &scanFile{db: db}
@@ -51,6 +55,7 @@ func NewScanFile() *scanFile {
 func (m *scanFile) Insert(fullFileName string) {
 	var fileMD5 string
 	var fileSize int64
+	result := m.FindByFullFileName(fullFileName)
 	stat, err := os.Stat(fullFileName)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -61,13 +66,18 @@ func (m *scanFile) Insert(fullFileName string) {
 		fileSize = stat.Size()
 		fileMD5 = myFile.GetFileMd5(fullFileName)
 	}
-	m.db.Create(&MyFile{
-		FullFileName: fullFileName,
-		Size:         fileSize,
-		FileMD5:      fileMD5,
-		Created:      time.Now(),
-		Status:       1,
-	})
+	if result.FullFileName == "" {
+		m.db.Create(&MyFile{
+			FullFileName: fullFileName,
+			Size:         fileSize,
+			FileMD5:      fileMD5,
+			Created:      time.Now(),
+			Status:       1,
+		})
+	} else if result.Size == 0 {
+		result.Size = fileSize
+		m.db.Save(result)
+	}
 }
 
 func (m *scanFile) FindByFullFileName(fullFileName string) *MyFile {
