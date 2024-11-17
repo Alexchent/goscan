@@ -10,9 +10,13 @@ type SaveLogic struct {
 }
 
 func NewSaveLogic(config config.Config) *SaveLogic {
-	return &SaveLogic{Model: model.NewScanFile(config.Sqlite.DSN)}
+	return &SaveLogic{Model: model.NewScanFile(config.Dir)}
 }
 
 func (s *SaveLogic) Save(fullFileName string) {
 	s.Model.Insert(fullFileName)
+}
+
+func (s *SaveLogic) FIndByFullFileName(fullFileName string) *model.MyFile {
+	return s.Model.FindByFullFileName(fullFileName)
 }

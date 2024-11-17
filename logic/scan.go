@@ -1,10 +1,9 @@
-package service
+package logic
 
 import (
 	"fmt"
 	"github.com/Alexchent/goscan/cache/mredis"
 	mconf "github.com/Alexchent/goscan/config"
-	"github.com/Alexchent/goscan/logic"
 	"log"
 	"os"
 	"path"
@@ -33,7 +32,7 @@ func WriteToFile(filePath string) {
 	if err != nil {
 		log.Println(err)
 	}
-	svc := logic.NewSaveLogic(*mconf.Conf)
+	svc := NewSaveLogic(*mconf.Conf)
 	//fmt.Println("正在扫描：", filePath)
 	for _, file := range fileInfoList {
 		fileName := file.Name()
