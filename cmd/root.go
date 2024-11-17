@@ -32,7 +32,7 @@ func Execute() error {
 // go run main.go -c=.scan.yaml
 func init() {
 	// 标志可以是 "persistent" 的，这意味着该标志将可用于分配给它的命令以及该命令下的每个命令。对于全局标志，将标志分配为根上的持久标志。
-	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", ".scan.yaml", "config file")
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file")
 	if cfgFile == "" {
 		dir, err := homedir.Dir()
 		if err != nil {

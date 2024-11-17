@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
-	myFile "github.com/Alexchent/goscan/file"
+	"github.com/Alexchent/goscan/file"
 	"log"
 	"os"
 	"os/exec"

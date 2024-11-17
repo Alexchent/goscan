@@ -1,14 +1,10 @@
-/*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
 	"fmt"
 	"github.com/Alexchent/goscan/cache/mredis"
-	mconf "github.com/Alexchent/goscan/config"
-	myFile "github.com/Alexchent/goscan/file"
-	"github.com/Alexchent/goscan/logic"
+	"github.com/Alexchent/goscan/config"
+	"github.com/Alexchent/goscan/file"
 	"os"
 	"strings"
 	"time"
@@ -30,8 +26,8 @@ var exportCmd = &cobra.Command{
 
 		if output != "" {
 			saveDir = output
-		} else if mconf.Conf.Dir != "" {
-			saveDir = mconf.Conf.Dir
+		} else if config.Conf.Dir != "" {
+			saveDir = config.Conf.Dir
 		} else {
 			dir, _ := os.UserHomeDir()
 			saveDir = dir + SaveDir
@@ -45,7 +41,7 @@ var exportCmd = &cobra.Command{
 		fd, _ := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 
 		data = mredis.SMembers(CacheKey)
-		svc := logic.NewSaveLogic(*mconf.Conf)
+		//svc := logic.NewSaveLogic(*mconf.Conf)
 		// 过滤掉换行符
 		for _, v := range data {
 			filename = strings.Trim(v, "\n")
@@ -53,7 +49,7 @@ var exportCmd = &cobra.Command{
 			if err != nil {
 				panic("文件写失败：" + v)
 			}
-			svc.Save(filename)
+			//svc.Save(filename)
 		}
 	},
 }

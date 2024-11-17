@@ -32,7 +32,7 @@ func WriteToFile(filePath string) {
 	if err != nil {
 		log.Println(err)
 	}
-	svc := NewSaveLogic(*mconf.Conf)
+	//svc := NewSaveLogic(*mconf.Conf)
 	//fmt.Println("正在扫描：", filePath)
 	for _, file := range fileInfoList {
 		fileName := file.Name()
@@ -55,7 +55,7 @@ func WriteToFile(filePath string) {
 			if mredis.SAdd(CacheKey, filename) == 1 {
 				fmt.Println(filename)
 				fd.WriteString(filename + "\n")
-				svc.Save(filename)
+				//svc.Save(filename)
 			}
 		}
 	}
