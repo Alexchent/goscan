@@ -8,6 +8,7 @@ import (
 	"github.com/Alexchent/goscan/cache/mredis"
 	mconf "github.com/Alexchent/goscan/config"
 	myFile "github.com/Alexchent/goscan/file"
+	"github.com/Alexchent/goscan/model"
 	"os"
 	"strings"
 	"time"
@@ -46,11 +47,20 @@ var exportCmd = &cobra.Command{
 		data = mredis.SMembers(CacheKey)
 		// 过滤掉换行符
 		for _, v := range data {
-			_, err := fd.WriteString(strings.Trim(v, "\n") + "\n")
+			filename = strings.Trim(v, "\n")
+			_, err := fd.WriteString(filename + "\n")
 			if err != nil {
 				panic("文件写失败：" + v)
-				return
 			}
+
+			var fileSize int64
+			stat, err := os.Stat(filename)
+			if err != nil {
+				fileSize = 0
+			} else {
+				fileSize = stat.Size()
+			}
+			model.NewScanFile().Insert(filename, fileSize)
 		}
 	},
 }

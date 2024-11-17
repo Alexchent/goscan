@@ -55,6 +55,11 @@ func WriteToFile(filePath string) {
 			if mredis.SAdd(CacheKey, filename) == 1 {
 				fmt.Println(filename)
 				fd.WriteString(filename)
+				//stat, err := os.Stat(filename)
+				//if err != nil {
+				//	return
+				//}
+				//model.NewScanFile().Insert(filename, stat.Size())
 			}
 		}
 	}
