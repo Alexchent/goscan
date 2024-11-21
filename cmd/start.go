@@ -34,7 +34,8 @@ var startCmd = &cobra.Command{
 			fmt.Println("只允许使用绝对路径或当前路径")
 			dir, err := homedir.Dir()
 			if err != nil {
-				panic(err)
+				fmt.Println(err)
+				return
 			}
 			path = dir + "/Downloads"
 		}

@@ -34,6 +34,9 @@ var (
 					}
 				}
 			}
+			if err = fileScanner.Err(); err != nil {
+				fmt.Println("scan file err: " + err.Error())
+			}
 			fmt.Println("finish")
 		},
 	}
