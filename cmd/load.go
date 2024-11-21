@@ -20,7 +20,8 @@ var (
 
 			f, err := os.Open(loadFile)
 			if err != nil {
-				panic(err)
+				fmt.Println(err.Error())
+				return
 			}
 			defer f.Close()
 
