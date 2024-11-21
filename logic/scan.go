@@ -1,9 +1,10 @@
 package logic
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/Alexchent/goscan/cache/mredis"
-	mconf "github.com/Alexchent/goscan/config"
+	"github.com/Alexchent/goscan/config"
 	"log"
 	"os"
 	"path"
@@ -14,13 +15,15 @@ import (
 const CacheKey = "have_save_file"
 
 // fd 小写不对外
-var fd *os.File
+// var fd *os.File
+var bw *bufio.Writer
 var once sync.Once
 
 func openLogfile() {
 	once.Do(func() {
 		filename := "have_save_file.log"
-		fd, _ = os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+		fd, _ := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+		bw = bufio.NewWriter(fd)
 	})
 }
 
@@ -46,17 +49,18 @@ func WriteToFile(filePath string) {
 		} else {
 			// 忽略指定格式的文件
 			suffix := path.Ext(fileName)[1:]
-			if _, ok := mconf.FilterSuffix[strings.ToLower(suffix)]; ok {
+			if _, ok := config.FilterSuffix[strings.ToLower(suffix)]; ok {
 				continue
 			}
 			filename := filePath + "/" + fileName
 
 			// 保存到redis成功，说明是新的文件
 			if mredis.SAdd(CacheKey, filename) == 1 {
-				fmt.Println(filename)
-				fd.WriteString(filename + "\n")
+				fmt.Println(CacheKey, filename)
+				bw.WriteString(filename + "\n")
 				//svc.Save(filename)
 			}
 		}
 	}
+	bw.Flush()
 }

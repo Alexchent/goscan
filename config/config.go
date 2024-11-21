@@ -34,11 +34,13 @@ func InitConf(conf string) {
 	viper.SetConfigFile(conf)
 	err := viper.ReadInConfig() // 读取配置信息
 	if err != nil {             // 读取配置信息失败
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		fmt.Println(fmt.Sprintf("Fatal error config file: %s \n", err))
+		return
 	}
 	// 将读取的配置信息保存至全局变量Conf
 	if err := viper.Unmarshal(Conf); err != nil {
-		panic(fmt.Errorf("unmarshal conf failed, err:%s \n", err))
+		fmt.Println(fmt.Sprintf("unmarshal conf failed, err:%s \n", err))
+		return
 	}
 	FilterSuffix = make(map[string]struct{}, 0)
 	for _, suffix := range Conf.FilterType {
@@ -47,7 +49,8 @@ func InitConf(conf string) {
 
 	// 注册redis
 	if Conf.Cache == nil {
-		panic("redis 配置异常")
+		fmt.Println("redis 配置异常")
+		return
 	}
 	mredis.NewRedis(Conf.Cache.Addr, Conf.Cache.Password, Conf.Cache.DB)
 }

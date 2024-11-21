@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	mconf "github.com/Alexchent/goscan/config"
+	"github.com/Alexchent/goscan/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -19,8 +19,8 @@ var versionCmd = &cobra.Command{
 		fmt.Println("当前版本是：v1.0.3")
 		fmt.Println(viper.AllKeys())
 		fmt.Println("配置文件：" + cfgFile)
-		fmt.Println("导出文件保存位置：", mconf.Conf.Dir)
-		fmt.Println("扫描时忽略掉的文件类型：", mconf.Conf.FilterType)
+		fmt.Println("导出文件保存位置：", config.Conf.Dir)
+		fmt.Println("扫描时忽略掉的文件类型：", config.Conf.FilterType)
 		fmt.Println("redis配置：", viper.Get("cache.addr"))
 	},
 }

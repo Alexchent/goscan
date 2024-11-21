@@ -1,7 +1,7 @@
 package model
 
 import (
-	myFile "github.com/Alexchent/goscan/file"
+	"github.com/Alexchent/goscan/help"
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 	"log"
@@ -17,18 +17,6 @@ type MyFile struct {
 	Status       int
 }
 
-var db *gorm.DB
-
-func init() {
-	//db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
-	//if err != nil {
-	//	panic("failed to connect database")
-	//}
-	//
-	//// 迁移 schema
-	//db.AutoMigrate(&MyFile{})
-}
-
 type ScanFile interface {
 	Insert(fullFileName string)
 	FindByFullFileName(fullFileName string) *MyFile
@@ -39,6 +27,9 @@ type scanFile struct {
 	db *gorm.DB
 }
 
+// 接口完整性校验
+var _ ScanFile = (*scanFile)(nil)
+
 func NewScanFile(dsn string) *scanFile {
 	if len(dsn) > 0 && dsn[len(dsn)-1] != '/' {
 		dsn += "/"
@@ -48,7 +39,11 @@ func NewScanFile(dsn string) *scanFile {
 		panic("failed to connect database")
 	}
 	// 迁移 schema
-	db.AutoMigrate(&MyFile{})
+	err = db.AutoMigrate(&MyFile{})
+	if err != nil {
+		panic(err)
+		return nil
+	}
 	return &scanFile{db: db}
 }
 
@@ -64,7 +59,7 @@ func (m *scanFile) Insert(fullFileName string) {
 		fileSize = 0
 	} else {
 		fileSize = stat.Size()
-		fileMD5 = myFile.GetFileMd5(fullFileName)
+		fileMD5 = help.GetFileMd5(fullFileName)
 	}
 	if result.FullFileName == "" {
 		m.db.Create(&MyFile{

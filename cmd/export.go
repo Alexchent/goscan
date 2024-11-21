@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/Alexchent/goscan/cache/mredis"
 	"github.com/Alexchent/goscan/config"
-	"github.com/Alexchent/goscan/file"
+	"github.com/Alexchent/goscan/help"
 	"os"
 	"strings"
 	"time"
@@ -34,7 +34,7 @@ var exportCmd = &cobra.Command{
 		}
 		fmt.Println("导出文件的路径:", saveDir)
 
-		myFile.CreateDateDir(saveDir)
+		help.CreateDateDir(saveDir)
 
 		var data []string
 		filename := fmt.Sprintf(saveDir+"/"+SavePath, time.Now().Unix())

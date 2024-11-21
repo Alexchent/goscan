@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
-	"github.com/Alexchent/goscan/file"
+	"github.com/Alexchent/goscan/help"
 	"log"
 	"os"
 	"os/exec"
@@ -33,7 +33,7 @@ func GroupByFileMD5(filePath string) {
 			GroupByFileMD5(filePath + "/" + fileName)
 		} else {
 			filename := filePath + "/" + fileName
-			fileMd5 := myFile.GetFileMd5(filename)
+			fileMd5 := help.GetFileMd5(filename)
 			fmt.Println(filename)
 			// 判断文件是否存在
 			if _, ok := listData[fileMd5]; ok {
@@ -112,7 +112,7 @@ func GroupByFileName(filePath string) {
 			GroupByFileMD5(filePath + "/" + fileName)
 		} else {
 			filename := filePath + "/" + fileName
-			fileMd5 := myFile.GetFileMd5(filename)
+			fileMd5 := help.GetFileMd5(filename)
 			fmt.Println(filename)
 			// 判断文件是否存在
 			if _, ok := listData[fileMd5]; ok {

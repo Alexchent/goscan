@@ -1,4 +1,4 @@
-package myFile
+package help
 
 import (
 	"bufio"
@@ -40,6 +40,7 @@ func ReadString(filename string) {
 		panic(err)
 	}
 
+	// 开启缓冲区，默认4096b 按行来分配，如果存在很多行超过4096b建议倍数增加缓冲区
 	rd := bufio.NewReader(f)
 	for {
 		line, err := rd.ReadString('\n')

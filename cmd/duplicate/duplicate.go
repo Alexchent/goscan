@@ -1,7 +1,7 @@
 package duplicate
 
 import (
-	myFile "github.com/Alexchent/goscan/file"
+	"github.com/Alexchent/goscan/help"
 	"os"
 	"sync"
 )
@@ -33,7 +33,7 @@ func Do(dir string, B chan *File) {
 			//fmt.Println(filename)
 			B <- &File{
 				FullFileName: filename,
-				MD5:          myFile.GetFileMd5(filename),
+				MD5:          help.GetFileMd5(filename),
 			}
 		}
 		close(B)
