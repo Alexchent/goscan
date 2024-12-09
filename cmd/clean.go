@@ -65,6 +65,6 @@ var cleanCmd = &cobra.Command{
 func init() {
 	// 本地标志, 此处进队cleanCmd有效
 	cleanCmd.Flags().StringVar(&clearSuffix, "suffix", "", "需要清理掉的文件类型")
-	cleanCmd.Flags().StringVar(&clearContain, "contain", "", "包含该值")
+	cleanCmd.Flags().StringVarP(&clearContain, "contain", "C", "", "包含该值")
 	rootCmd.AddCommand(cleanCmd)
 }
