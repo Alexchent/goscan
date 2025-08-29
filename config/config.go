@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"github.com/Alexchent/goscan/cache/mredis"
+	"github.com/Alexchent/goscan/cache"
 	"github.com/spf13/viper"
 	"os"
 )
@@ -42,15 +42,17 @@ func InitConf(conf string) {
 		fmt.Println(fmt.Sprintf("unmarshal conf failed, err:%s \n", err))
 		return
 	}
-	FilterSuffix = make(map[string]struct{}, 0)
+	FilterSuffix = make(map[string]struct{}, len(Conf.FilterType))
 	for _, suffix := range Conf.FilterType {
 		FilterSuffix[suffix] = struct{}{}
 	}
+
+	fmt.Println(FilterSuffix)
 
 	// 注册redis
 	if Conf.Cache == nil {
 		fmt.Println("redis 配置异常")
 		return
 	}
-	mredis.NewRedis(Conf.Cache.Addr, Conf.Cache.Password, Conf.Cache.DB)
+	cache.NewRedis(Conf.Cache.Addr, Conf.Cache.Password, Conf.Cache.DB)
 }

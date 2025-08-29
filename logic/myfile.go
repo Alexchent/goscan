@@ -6,7 +6,7 @@ import (
 )
 
 type SaveLogic struct {
-	Model model.ScanFile
+	Model *model.ScanFile
 }
 
 func NewSaveLogic(config config.Config) *SaveLogic {

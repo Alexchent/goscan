@@ -17,20 +17,20 @@ type MyFile struct {
 	Status       int
 }
 
-type ScanFile interface {
+type IScanFile interface {
 	Insert(fullFileName string)
 	FindByFullFileName(fullFileName string) *MyFile
 	FindMd5(fileMd5 string) []MyFile
 }
 
-type scanFile struct {
+type ScanFile struct {
 	db *gorm.DB
 }
 
 // 接口完整性校验
-var _ ScanFile = (*scanFile)(nil)
+var _ IScanFile = (*ScanFile)(nil)
 
-func NewScanFile(dsn string) *scanFile {
+func NewScanFile(dsn string) *ScanFile {
 	if len(dsn) > 0 && dsn[len(dsn)-1] != '/' {
 		dsn += "/"
 	}
@@ -44,10 +44,10 @@ func NewScanFile(dsn string) *scanFile {
 		panic(err)
 		return nil
 	}
-	return &scanFile{db: db}
+	return &ScanFile{db: db}
 }
 
-func (m *scanFile) Insert(fullFileName string) {
+func (m *ScanFile) Insert(fullFileName string) {
 	var fileMD5 string
 	var fileSize int64
 	result := m.FindByFullFileName(fullFileName)
@@ -75,13 +75,13 @@ func (m *scanFile) Insert(fullFileName string) {
 	}
 }
 
-func (m *scanFile) FindByFullFileName(fullFileName string) *MyFile {
+func (m *ScanFile) FindByFullFileName(fullFileName string) *MyFile {
 	var data MyFile
 	m.db.First(&data, "full_file_name = ?", fullFileName)
 	return &data
 }
 
-func (m *scanFile) FindMd5(fileMd5 string) []MyFile {
+func (m *ScanFile) FindMd5(fileMd5 string) []MyFile {
 	var data []MyFile
 	m.db.Find(&data, "file_md5 = ?", fileMd5)
 	//m.db.Where("file_md5 = ?", fileMd5).Find(&data)

@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Alexchent/goscan/cache/mredis"
+	"github.com/Alexchent/goscan/cache"
 	"github.com/Alexchent/goscan/config"
 	"github.com/Alexchent/goscan/help"
 	"os"
@@ -40,7 +40,7 @@ var exportCmd = &cobra.Command{
 		filename := fmt.Sprintf(saveDir+"/"+SavePath, time.Now().Unix())
 		fd, _ := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 
-		data = mredis.SMembers(CacheKey)
+		data = cache.SMembers(CacheKey)
 		//svc := logic.NewSaveLogic(*mconf.Conf)
 		// 过滤掉换行符
 		for _, v := range data {

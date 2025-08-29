@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/Alexchent/goscan/config"
 	"github.com/Alexchent/goscan/logic"
 	"github.com/gookit/color"
 	"github.com/mitchellh/go-homedir"
@@ -42,7 +43,11 @@ var startCmd = &cobra.Command{
 
 		path = strings.TrimRight(path, "/")
 		color.HiGreen.Println("开始扫描：", path)
-		logic.WriteToFile(path)
+		//logic.WriteToFile(path)
+		err := logic.Save(path, config.FilterSuffix)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	},
 }
 

@@ -10,20 +10,18 @@ import (
 var suffix map[string]any
 
 func init() {
-	//suffixs := []string{".git", "", ".localized", ".gitignore", ".sample"}
 	suffix = map[string]any{
-		"git":        nil,
-		"jpg":        nil,
-		".DS_Store":  nil,
-		".localized": nil,
-		".gitignore": nil,
-		".sample":    nil,
+		"git": nil,
+		"jpg": nil,
 	}
 }
 
 func Scale(dir string) error {
 	//获取当前目录下的所有文件或目录信息
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
 		if !info.IsDir() {
 			ext := filepath.Ext(path)
 			_, ok := suffix[ext]

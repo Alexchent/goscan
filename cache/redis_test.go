@@ -1,4 +1,4 @@
-package mredis
+package cache
 
 import (
 	"testing"

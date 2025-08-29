@@ -1,0 +1,14 @@
+Dir: "./scanLog"  # 默认HOME目录
+FilterType:
+  - "js"
+  - "torrent"
+  - "downloading"
+  - "tiff"
+  - "log"
+Cache:
+  Addr: "localhost:6379"
+  Password: ""
+  DB: 0
+
+Sqlite:
+  DSN: ""

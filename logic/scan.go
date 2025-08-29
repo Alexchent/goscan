@@ -3,11 +3,10 @@ package logic
 import (
 	"bufio"
 	"fmt"
-	"github.com/Alexchent/goscan/cache/mredis"
-	"github.com/Alexchent/goscan/config"
-	"log"
+	"github.com/Alexchent/goscan/cache"
+	"io/fs"
 	"os"
-	"path"
+	"path/filepath"
 	"strings"
 	"sync"
 )
@@ -27,40 +26,32 @@ func openLogfile() {
 	})
 }
 
-func WriteToFile(filePath string) {
+func Save(filePath string, filterType map[string]struct{}) (err error) {
 	openLogfile()
-
-	filePath = strings.TrimRight(filePath, "/")
-	fileInfoList, err := os.ReadDir(filePath)
-	if err != nil {
-		log.Println(err)
-	}
-	//svc := NewSaveLogic(*mconf.Conf)
-	//fmt.Println("正在扫描：", filePath)
-	for _, file := range fileInfoList {
-		fileName := file.Name()
+	err = filepath.Walk(filePath, func(path string, info fs.FileInfo, err error) error {
+		if err != nil || info.IsDir() {
+			return err
+		}
 		// 如果是影藏文件，直接跳过
-		if fileName[0] == '.' {
-			continue
+		if info.Name()[0] == '.' {
+			return nil
 		}
 
-		if file.IsDir() {
-			WriteToFile(filePath + "/" + fileName)
+		// 忽略指定格式的文件
+		suffix := strings.ToLower(strings.TrimPrefix(filepath.Ext(info.Name()), "."))
+		if _, ok := filterType[suffix]; ok {
+			return nil
+		}
+
+		// 保存到redis成功，说明是新的文件
+		file := fmt.Sprintf("%s,%d", path, info.Size())
+		if cache.SAdd(CacheKey, file) == 1 {
+			_, _ = bw.WriteString(file + "\n")
 		} else {
-			// 忽略指定格式的文件
-			suffix := path.Ext(fileName)[1:]
-			if _, ok := config.FilterSuffix[strings.ToLower(suffix)]; ok {
-				continue
-			}
-			filename := filePath + "/" + fileName
-
-			// 保存到redis成功，说明是新的文件
-			if mredis.SAdd(CacheKey, filename) == 1 {
-				fmt.Println(CacheKey, filename)
-				bw.WriteString(filename + "\n")
-				//svc.Save(filename)
-			}
+			fmt.Println("file is exist ", path)
 		}
-	}
-	bw.Flush()
+		return nil
+	})
+	_ = bw.Flush()
+	return err
 }

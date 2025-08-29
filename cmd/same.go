@@ -11,7 +11,7 @@ import (
 var sameCmd = &cobra.Command{
 	Use:   "same",
 	Short: "查找重复文件",
-	Long:  `查找重复文件`,
+	Long:  `查找重复文件，并输出到txt文件中`,
 	Run: func(cmd *cobra.Command, args []string) {
 		start := time.Now()
 		defer fmt.Println("扫描完成，耗时：", time.Since(start))

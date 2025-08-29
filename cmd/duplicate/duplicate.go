@@ -39,7 +39,7 @@ func Do(dir string, B chan *File) {
 		close(B)
 	}()
 
-	pWg.Wait()
+	pWg.Wait() // 等待写入完成
 	close(A)
 	return
 }

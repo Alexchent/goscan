@@ -23,7 +23,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Alexchent/goscan/cache/mredis"
+	"github.com/Alexchent/goscan/cache"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -39,13 +39,13 @@ var cleanCmd = &cobra.Command{
 	Long:  `清理掉符合条件的的文件`,
 	Run: func(cmd *cobra.Command, args []string) {
 		key := CacheKey
-		val := mredis.SMembers(key)
+		val := cache.SMembers(key)
 		for _, v := range val {
 			// 按 后缀清理
 			if clearSuffix != "" {
 				if strings.HasSuffix(v, clearSuffix) {
 					fmt.Println("过滤掉：", v)
-					mredis.SRem(key, v)
+					cache.SRem(key, v)
 				}
 			}
 
@@ -53,7 +53,7 @@ var cleanCmd = &cobra.Command{
 			if clearContain != "" {
 				if strings.Contains(v, clearContain) {
 					fmt.Println("过滤掉：", v)
-					mredis.SRem(key, v)
+					cache.SRem(key, v)
 				}
 			}
 		}

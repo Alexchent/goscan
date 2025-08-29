@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Alexchent/goscan/cache/mredis"
+	"github.com/Alexchent/goscan/cache"
 	"github.com/spf13/cobra"
 	"regexp"
 	"strings"
@@ -32,7 +32,7 @@ func init() {
 }
 
 func SearchFromRedisSet(key, path string) (count int) {
-	res := mredis.SMembers(key)
+	res := cache.SMembers(key)
 	count = 0
 	//过滤掉特殊字符-和_
 	reg, _ := regexp.Compile("-|_")

@@ -3,7 +3,7 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	"github.com/Alexchent/goscan/cache/mredis"
+	"github.com/Alexchent/goscan/cache"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -29,7 +29,7 @@ var (
 			fileScanner.Split(bufio.ScanLines)
 			for fileScanner.Scan() {
 				if fileScanner.Text() != "" {
-					if mredis.SAdd(CacheKey, fileScanner.Text()) == 1 {
+					if cache.SAdd(CacheKey, fileScanner.Text()) == 1 {
 						fmt.Println("写入：", fileScanner.Text())
 					}
 				}
