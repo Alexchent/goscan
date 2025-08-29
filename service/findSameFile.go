@@ -1,7 +1,6 @@
 package service
 
 import (
-	"crypto/md5"
 	"encoding/json"
 	"fmt"
 	"github.com/Alexchent/goscan/help"
@@ -75,25 +74,15 @@ func RemoveSameFile(file FileList) {
 		if len(v) > 1 {
 			// 保留第一个文件，删除其他文件
 			for _, v := range v[1:] {
-				//fmt.Println("remove:\t" + v)
-				encoded := MD5(v)
+				encoded := help.MD5(v)
 				cmd := exec.Command("mv", v, "/Users/chentao/same/"+encoded+"-"+path.Base(v))
-				//err := cmd.Run()
 				output, err := cmd.CombinedOutput()
 				if err != nil {
 					fmt.Printf("combined out:\n%s\n", string(output))
-					//fmt.Printf("cmd.Run() failed with %s\n", err)
 				}
 			}
 		}
 	}
-}
-
-func MD5(str string) string {
-	data := []byte(str)
-	has := md5.Sum(data)
-	md5str := fmt.Sprintf("%x", has)
-	return md5str
 }
 
 func GroupByFileName(filePath string) {

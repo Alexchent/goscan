@@ -47,12 +47,6 @@ func InitConf(conf string) {
 		FilterSuffix[suffix] = struct{}{}
 	}
 
-	fmt.Println(FilterSuffix)
-
 	// 注册redis
-	if Conf.Cache == nil {
-		fmt.Println("redis 配置异常")
-		return
-	}
 	cache.NewRedis(Conf.Cache.Addr, Conf.Cache.Password, Conf.Cache.DB)
 }

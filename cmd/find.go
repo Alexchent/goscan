@@ -2,10 +2,14 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Alexchent/goscan/cache"
-	"github.com/spf13/cobra"
+	"github.com/gookit/color"
 	"regexp"
+	"strconv"
 	"strings"
+
+	"github.com/Alexchent/goscan/cache"
+	"github.com/Alexchent/goscan/help"
+	"github.com/spf13/cobra"
 )
 
 // findCmd represents the find command
@@ -40,7 +44,17 @@ func SearchFromRedisSet(key, path string) (count int) {
 	for _, val := range res {
 		a := reg.ReplaceAllString(val, "")
 		if strings.Contains(strings.ToLower(a), strings.ToLower(path)) {
-			fmt.Println(val)
+			res := strings.Split(val, ",")
+			if len(res) == 2 {
+				fileSize, err := strconv.ParseInt(res[1], 10, 64)
+				if err != nil {
+					fmt.Println(err.Error())
+				} else {
+					fmt.Println(res[0], color.HiGreen.Sprint(help.FormatFileSize(fileSize)))
+				}
+			} else {
+				fmt.Println(val)
+			}
 			count++
 		}
 	}
