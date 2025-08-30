@@ -5,6 +5,7 @@ import (
 	"github.com/Alexchent/goscan/config"
 	"github.com/Alexchent/goscan/logic"
 	"github.com/mitchellh/go-homedir"
+	"os"
 )
 
 func main() {
@@ -16,14 +17,26 @@ func main() {
 	cfgFile := dir + "/.scan.yaml"
 	config.InitConf(cfgFile)
 
-	var path string
-	fmt.Printf("请输入要查询的文件:\n")
-	_, err = fmt.Scan(&path)
-	if err != nil {
-		return
+	var count int
+	//count := 0
+	for i, path := range os.Args {
+		if i == 0 {
+			continue
+		}
+		count += logic.SearchFromRedisSet(logic.CacheKey, path)
+		res := fmt.Sprintf("本次扫描发现 %d 个文件", count)
+		fmt.Println(res)
 	}
-	count := 0
-	count += logic.SearchFromRedisSet(logic.CacheKey, path)
-	res := fmt.Sprintf("本次扫描发现 %d 个文件", count)
-	fmt.Println(res)
+	if len(os.Args) == 1 {
+		var path string
+		fmt.Printf("请输入要查询的文件:\n")
+		_, err = fmt.Scan(&path)
+		if err != nil {
+			return
+		}
+		count = 0
+		count += logic.SearchFromRedisSet(logic.CacheKey, path)
+		res := fmt.Sprintf("本次扫描发现 %d 个文件", count)
+		fmt.Println(res)
+	}
 }

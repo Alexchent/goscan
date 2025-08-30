@@ -23,3 +23,15 @@ func FormatFileSize(fileSize int64) string {
 		return fmt.Sprintf("%.2f GB", float64(fileSize)/(1024*1024*1024))
 	}
 }
+
+func FormatFileSize1000(fileSize int64) string {
+	if fileSize < 1000 {
+		return fmt.Sprintf("%d B", fileSize)
+	} else if fileSize < 1000*1000 {
+		return fmt.Sprintf("%.2f KB", float64(fileSize)/1000)
+	} else if fileSize < 1000*1000*1000 {
+		return fmt.Sprintf("%.2f MB", float64(fileSize)/(1000*1000))
+	} else {
+		return fmt.Sprintf("%.2f GB", float64(fileSize)/(1000*1000*1000))
+	}
+}

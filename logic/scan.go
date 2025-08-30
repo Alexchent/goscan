@@ -75,7 +75,7 @@ func SearchFromRedisSet(key, path string) (count int) {
 				if err != nil {
 					fmt.Println(err.Error())
 				} else {
-					fmt.Println(res[0], color.HiGreen.Sprint(help.FormatFileSize(fileSize)))
+					fmt.Println(res[0], color.HiGreen.Sprint(help.FormatFileSize1000(fileSize)))
 				}
 			} else {
 				fmt.Println(val)
