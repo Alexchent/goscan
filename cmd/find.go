@@ -2,13 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/gookit/color"
-	"regexp"
-	"strconv"
-	"strings"
-
-	"github.com/Alexchent/goscan/cache"
-	"github.com/Alexchent/goscan/help"
+	"github.com/Alexchent/goscan/logic"
 	"github.com/spf13/cobra"
 )
 
@@ -25,7 +19,7 @@ var findCmd = &cobra.Command{
 			return
 		}
 		count := 0
-		count += SearchFromRedisSet(CacheKey, path)
+		count += logic.SearchFromRedisSet(CacheKey, path)
 		res := fmt.Sprintf("本次扫描发现 %d 个文件", count)
 		fmt.Println(res)
 	},
@@ -33,30 +27,4 @@ var findCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(findCmd)
-}
-
-func SearchFromRedisSet(key, path string) (count int) {
-	res := cache.SMembers(key)
-	count = 0
-	//过滤掉特殊字符-和_
-	reg, _ := regexp.Compile("-|_")
-	path = reg.ReplaceAllString(path, "")
-	for _, val := range res {
-		a := reg.ReplaceAllString(val, "")
-		if strings.Contains(strings.ToLower(a), strings.ToLower(path)) {
-			res := strings.Split(val, ",")
-			if len(res) == 2 {
-				fileSize, err := strconv.ParseInt(res[1], 10, 64)
-				if err != nil {
-					fmt.Println(err.Error())
-				} else {
-					fmt.Println(res[0], color.HiGreen.Sprint(help.FormatFileSize(fileSize)))
-				}
-			} else {
-				fmt.Println(val)
-			}
-			count++
-		}
-	}
-	return
 }

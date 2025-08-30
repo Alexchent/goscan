@@ -4,9 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/Alexchent/goscan/cache"
+	"github.com/Alexchent/goscan/help"
+	"github.com/gookit/color"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 )
@@ -26,7 +30,7 @@ func openLogfile() {
 	})
 }
 
-func Save(filePath string, filterType map[string]struct{}) (err error) {
+func Save(cacheKey, filePath string, filterType map[string]struct{}) (err error) {
 	openLogfile()
 	err = filepath.Walk(filePath, func(path string, info fs.FileInfo, err error) error {
 		if err != nil || info.IsDir() {
@@ -45,7 +49,7 @@ func Save(filePath string, filterType map[string]struct{}) (err error) {
 
 		// 保存到redis成功，说明是新的文件
 		file := fmt.Sprintf("%s,%d", path, info.Size())
-		if cache.SAdd(CacheKey, file) == 1 {
+		if cache.SAdd(cacheKey, file) == 1 {
 			_, _ = bw.WriteString(file + "\n")
 		} else {
 			fmt.Println("file is exist ", path)
@@ -54,4 +58,30 @@ func Save(filePath string, filterType map[string]struct{}) (err error) {
 	})
 	_ = bw.Flush()
 	return err
+}
+
+func SearchFromRedisSet(key, path string) (count int) {
+	res := cache.SMembers(key)
+	count = 0
+	//过滤掉特殊字符-和_
+	reg, _ := regexp.Compile("-|_")
+	path = reg.ReplaceAllString(path, "")
+	for _, val := range res {
+		a := reg.ReplaceAllString(val, "")
+		if strings.Contains(strings.ToLower(a), strings.ToLower(path)) {
+			res := strings.Split(val, ",")
+			if len(res) == 2 {
+				fileSize, err := strconv.ParseInt(res[1], 10, 64)
+				if err != nil {
+					fmt.Println(err.Error())
+				} else {
+					fmt.Println(res[0], color.HiGreen.Sprint(help.FormatFileSize(fileSize)))
+				}
+			} else {
+				fmt.Println(val)
+			}
+			count++
+		}
+	}
+	return
 }

@@ -44,7 +44,7 @@ var startCmd = &cobra.Command{
 		path = strings.TrimRight(path, "/")
 		color.HiGreen.Println("开始扫描：", path)
 		//logic.WriteToFile(path)
-		err := logic.Save(path, config.FilterSuffix)
+		err := logic.Save(CacheKey, path, config.FilterSuffix)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
