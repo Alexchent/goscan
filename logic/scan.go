@@ -51,7 +51,7 @@ func Save(cacheKey, filePath string, filterType map[string]struct{}) (err error)
 		file := fmt.Sprintf("%s,%d", path, info.Size())
 		if cache.SAdd(cacheKey, file) == 1 {
 			_, _ = bw.WriteString(file + "\n")
-			fmt.Printf("new file %s %s", path, color.HiGreen.Sprint(help.FormatFileSize1000(info.Size())))
+			fmt.Printf("new file %s %s\n", path, color.HiGreen.Sprint(help.FormatFileSize1000(info.Size())))
 		}
 		return nil
 	})
