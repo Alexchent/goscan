@@ -2,7 +2,7 @@
 log
 storage
 *.txt
-.DS_Store
 gscan
 etc
 .scan.yaml
+.DS_Store

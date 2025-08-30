@@ -3,9 +3,6 @@ package logic
 import (
 	"bufio"
 	"fmt"
-	"github.com/Alexchent/goscan/cache"
-	"github.com/Alexchent/goscan/help"
-	"github.com/gookit/color"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -13,6 +10,10 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/Alexchent/goscan/cache"
+	"github.com/Alexchent/goscan/help"
+	"github.com/gookit/color"
 )
 
 const CacheKey = "have_save_file"
@@ -50,7 +51,7 @@ func Save(cacheKey, filePath string, filterType map[string]struct{}) (err error)
 		// 保存到redis成功，说明是新的文件
 		file := fmt.Sprintf("%s,%d", path, info.Size())
 		if cache.SAdd(cacheKey, file) == 1 {
-			_, _ = bw.WriteString(file + "\n")
+			_, _ = bw.WriteString(file + help.FormatFileSize1000(info.Size()) + "\n")
 			fmt.Printf("new file %s %s\n", path, color.HiGreen.Sprint(help.FormatFileSize1000(info.Size())))
 		}
 		return nil
