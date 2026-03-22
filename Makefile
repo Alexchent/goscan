@@ -1,9 +1,8 @@
 .PHONY: default local win mac
 
-default local:
+default:
 	CGO_ENABLED=0 go build -o gscan main.go
-    CGO_ENABLED=0 go build -o sscan sscan.go
-
+   
 linux:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o gscan main.go
 
