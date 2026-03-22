@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sync"
 	"time"
@@ -418,7 +419,7 @@ var duplicateCmd = &cobra.Command{
 		printToConsole(results, fileCount, start)
 
 		// 保存到 CSV 文件
-		saveToCSV(results, path)
+		// saveToCSV(results, path)
 
 		// 启动 Web 服务器
 		startWebServer()
@@ -718,9 +719,49 @@ func startWebServer() {
 	fmt.Println(color.CyanString("========================================"))
 	fmt.Println(color.HiBlackString("按 Ctrl+C 停止服务器"))
 
+	// 自动打开浏览器
+	url := fmt.Sprintf("http://localhost:%d", webPort)
+	go func() {
+		time.Sleep(500 * time.Millisecond) // 等待服务器启动
+		openBrowser(url)
+	}()
+
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", webPort), nil); err != nil {
 		fmt.Println(color.RedString("Web服务器启动失败: %v", err))
 	}
+}
+
+// openBrowser 自动打开浏览器
+func openBrowser(url string) {
+	var cmd string
+	var args []string
+
+	switch {
+	case isCommandAvailable("open"): // macOS
+		cmd = "open"
+		args = []string{url}
+	case isCommandAvailable("xdg-open"): // Linux
+		cmd = "xdg-open"
+		args = []string{url}
+	case isCommandAvailable("rundll32"): // Windows
+		cmd = "rundll32"
+		args = []string{"url.dll,FileProtocolHandler", url}
+	default:
+		fmt.Println(color.YellowString("请手动在浏览器中打开: %s", url))
+		return
+	}
+
+	execCmd := exec.Command(cmd, args...)
+	if err := execCmd.Start(); err != nil {
+		fmt.Println(color.YellowString("无法自动打开浏览器: %v", err))
+		fmt.Println(color.YellowString("请手动在浏览器中打开: %s", url))
+	}
+}
+
+// isCommandAvailable 检查命令是否可用
+func isCommandAvailable(name string) bool {
+	_, err := exec.LookPath(name)
+	return err == nil
 }
 
 func init() {
