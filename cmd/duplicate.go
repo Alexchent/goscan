@@ -421,8 +421,10 @@ var duplicateCmd = &cobra.Command{
 		// 保存到 CSV 文件
 		// saveToCSV(results, path)
 
-		// 启动 Web 服务器
-		startWebServer()
+		// 只有找到重复文件时才启动 Web 服务器
+		if len(results) > 0 {
+			startWebServer()
+		}
 	},
 }
 
