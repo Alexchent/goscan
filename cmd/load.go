@@ -3,9 +3,11 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	"github.com/Alexchent/goscan/cache"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/Alexchent/goscan/cache"
+	"github.com/Alexchent/goscan/logic"
+	"github.com/spf13/cobra"
 )
 
 // loadCmd represents the load command
@@ -29,7 +31,7 @@ var (
 			fileScanner.Split(bufio.ScanLines)
 			for fileScanner.Scan() {
 				if fileScanner.Text() != "" {
-					if cache.SAdd(CacheKey, fileScanner.Text()) == 1 {
+					if cache.SAdd(logic.CacheKey, fileScanner.Text()) == 1 {
 						fmt.Println("写入：", fileScanner.Text())
 					}
 				}

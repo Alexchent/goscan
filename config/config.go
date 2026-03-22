@@ -2,9 +2,10 @@ package config
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/Alexchent/goscan/cache"
 	"github.com/spf13/viper"
-	"os"
 )
 
 type Config struct {
@@ -26,27 +27,41 @@ type Cache struct {
 var Conf = &Config{}
 var FilterSuffix map[string]struct{}
 
-func InitConf(conf string) {
+// InitConf 初始化配置，返回错误以便调用方处理
+func InitConf(conf string) error {
 	if len(conf) == 0 {
-		dir, _ := os.UserHomeDir()
+		dir, err := os.UserHomeDir()
+		if err != nil {
+			return fmt.Errorf("获取用户目录失败: %w", err)
+		}
 		conf = dir + "/.scan.yaml"
 	}
+
 	viper.SetConfigFile(conf)
-	err := viper.ReadInConfig() // 读取配置信息
-	if err != nil {             // 读取配置信息失败
-		fmt.Println(fmt.Sprintf("Fatal error config file: %s \n", err))
-		return
+	if err := viper.ReadInConfig(); err != nil {
+		return fmt.Errorf("读取配置文件失败: %w", err)
 	}
+
 	// 将读取的配置信息保存至全局变量Conf
 	if err := viper.Unmarshal(Conf); err != nil {
-		fmt.Println(fmt.Sprintf("unmarshal conf failed, err:%s \n", err))
-		return
+		return fmt.Errorf("解析配置文件失败: %w", err)
 	}
+
+	// 验证必要配置
+	if Conf.Cache == nil {
+		return fmt.Errorf("配置文件缺少 Cache 配置项")
+	}
+
+	// 初始化过滤后缀映射
 	FilterSuffix = make(map[string]struct{}, len(Conf.FilterType))
 	for _, suffix := range Conf.FilterType {
 		FilterSuffix[suffix] = struct{}{}
 	}
 
-	// 注册redis
-	cache.NewRedis(Conf.Cache.Addr, Conf.Cache.Password, Conf.Cache.DB)
+	// 初始化 Redis 连接
+	if err := cache.NewRedis(Conf.Cache.Addr, Conf.Cache.Password, Conf.Cache.DB); err != nil {
+		return fmt.Errorf("Redis 连接失败: %w", err)
+	}
+
+	return nil
 }

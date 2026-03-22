@@ -2,12 +2,14 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Alexchent/goscan/cache"
-	"github.com/Alexchent/goscan/config"
-	"github.com/Alexchent/goscan/help"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/Alexchent/goscan/cache"
+	"github.com/Alexchent/goscan/config"
+	"github.com/Alexchent/goscan/help"
+	"github.com/Alexchent/goscan/logic"
 
 	"github.com/spf13/cobra"
 )
@@ -40,7 +42,7 @@ var exportCmd = &cobra.Command{
 		filename := fmt.Sprintf(saveDir+"/"+SavePath, time.Now().Unix())
 		fd, _ := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 
-		data = cache.SMembers(CacheKey)
+		data = cache.SMembers(logic.CacheKey)
 		//svc := logic.NewSaveLogic(*mconf.Conf)
 		// 过滤掉换行符
 		for _, v := range data {

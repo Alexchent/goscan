@@ -23,8 +23,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Alexchent/goscan/cache"
 	"strings"
+
+	"github.com/Alexchent/goscan/cache"
+	"github.com/Alexchent/goscan/logic"
 
 	"github.com/spf13/cobra"
 )
@@ -38,7 +40,7 @@ var cleanCmd = &cobra.Command{
 	Short: "清理掉符合条件的的文件",
 	Long:  `清理掉符合条件的的文件`,
 	Run: func(cmd *cobra.Command, args []string) {
-		key := CacheKey
+		key := logic.CacheKey
 		val := cache.SMembers(key)
 		for _, v := range val {
 			// 按 后缀清理

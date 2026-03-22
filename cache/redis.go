@@ -10,7 +10,7 @@ import (
 var Client *redis.Client
 var ctx = context.Background()
 
-func NewRedis(addr string, password string, db int) {
+func NewRedis(addr string, password string, db int) error {
 	Client = redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: password, // no password set
@@ -19,9 +19,9 @@ func NewRedis(addr string, password string, db int) {
 
 	_, err := Client.Ping(ctx).Result()
 	if err != nil {
-		//fmt.Println("redis 连接失败")
-		panic("redis 连接失败")
+		return fmt.Errorf("redis 连接失败: %w", err)
 	}
+	return nil
 }
 
 func Get(key string) (val string) {

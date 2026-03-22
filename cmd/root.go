@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/Alexchent/goscan/config"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -9,7 +11,6 @@ import (
 
 const SaveDir = "/scanLog"
 const SavePath = "have_save_file_%d.txt"
-const CacheKey = "have_save_file"
 
 var (
 	// Used for flags.
@@ -17,7 +18,7 @@ var (
 	path    string
 
 	rootCmd = &cobra.Command{
-		Use:   "cobra-cli",
+		Use:   "goscan",
 		Short: "scan 用于扫描文件目录，和查找文件",
 		Long:  `scan 是一个用于扫描本地文件，形成日志文件，以便或许快速查找文件的程序`,
 	}
@@ -45,5 +46,8 @@ func init() {
 }
 
 func initConfig() {
-	config.InitConf(cfgFile)
+	if err := config.InitConf(cfgFile); err != nil {
+		fmt.Printf("配置初始化失败: %v\n", err)
+		os.Exit(1)
+	}
 }
