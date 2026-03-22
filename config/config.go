@@ -3,8 +3,10 @@ package config
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/Alexchent/goscan/cache"
+	"github.com/Alexchent/goscan/service"
 	"github.com/spf13/viper"
 )
 
@@ -35,6 +37,13 @@ func InitConf(conf string) error {
 			return fmt.Errorf("获取用户目录失败: %w", err)
 		}
 		conf = dir + "/.scan.yaml"
+	}
+
+	// 检查配置文件是否存在，不存在则自动创建
+	if _, err := os.Stat(conf); os.IsNotExist(err) {
+		fmt.Printf("配置文件不存在，正在自动创建: %s\n", conf)
+		confDir := filepath.Dir(conf)
+		service.MakeConfig(confDir)
 	}
 
 	viper.SetConfigFile(conf)

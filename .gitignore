@@ -6,3 +6,5 @@ gscan
 etc
 .scan.yaml
 .DS_Store
+*.log
+goscan

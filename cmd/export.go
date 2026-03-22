@@ -18,7 +18,7 @@ var output string
 
 // exportCmd represents the export command
 var exportCmd = &cobra.Command{
-	Use:   "export",
+	Use:   "dump",
 	Short: "将所有记录到处到文件中",
 	Long:  `将所有记录到处到文件中`,
 	Run: func(cmd *cobra.Command, args []string) {
