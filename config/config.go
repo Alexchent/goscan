@@ -3,10 +3,8 @@ package config
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/Alexchent/goscan/cache"
-	"github.com/Alexchent/goscan/service"
 	"github.com/spf13/viper"
 )
 
@@ -29,8 +27,29 @@ type Cache struct {
 var Conf = &Config{}
 var FilterSuffix map[string]struct{}
 
+// defaultConfig 返回默认配置
+func defaultConfig() *Config {
+	return &Config{
+		Dir: "./scanLog",
+		FilterType: []string{
+			"js",
+			"torrent",
+			"downloading",
+			"tiff",
+		},
+		Cache: &Cache{
+			Addr:     "localhost:6379",
+			Password: "",
+			DB:       0,
+		},
+	}
+}
+
 // InitConf 初始化配置，返回错误以便调用方处理
 func InitConf(conf string) error {
+	// 设置默认配置
+	Conf = defaultConfig()
+
 	if len(conf) == 0 {
 		dir, err := os.UserHomeDir()
 		if err != nil {
@@ -39,26 +58,25 @@ func InitConf(conf string) error {
 		conf = dir + "/.scan.yaml"
 	}
 
-	// 检查配置文件是否存在，不存在则自动创建
+	// 检查配置文件是否存在
 	if _, err := os.Stat(conf); os.IsNotExist(err) {
-		fmt.Printf("配置文件不存在，正在自动创建: %s\n", conf)
-		confDir := filepath.Dir(conf)
-		service.MakeConfig(confDir)
-	}
+		fmt.Printf("配置文件不存在，使用默认配置: %s\n", conf)
+	} else {
+		// 配置文件存在，读取并合并
+		viper.SetConfigFile(conf)
+		if err := viper.ReadInConfig(); err != nil {
+			return fmt.Errorf("读取配置文件失败: %w", err)
+		}
 
-	viper.SetConfigFile(conf)
-	if err := viper.ReadInConfig(); err != nil {
-		return fmt.Errorf("读取配置文件失败: %w", err)
-	}
-
-	// 将读取的配置信息保存至全局变量Conf
-	if err := viper.Unmarshal(Conf); err != nil {
-		return fmt.Errorf("解析配置文件失败: %w", err)
+		// 将读取的配置信息覆盖默认配置
+		if err := viper.Unmarshal(Conf); err != nil {
+			return fmt.Errorf("解析配置文件失败: %w", err)
+		}
 	}
 
 	// 验证必要配置
 	if Conf.Cache == nil {
-		return fmt.Errorf("配置文件缺少 Cache 配置项")
+		return fmt.Errorf("配置缺少 Cache 配置项")
 	}
 
 	// 初始化过滤后缀映射
