@@ -45,5 +45,3 @@ require (
 	modernc.org/memory v1.5.0 // indirect
 	modernc.org/sqlite v1.23.1 // indirect
 )
-
-replace github.com/fatih/color v1.19.0 => github.com/fatih/color v1.18.0

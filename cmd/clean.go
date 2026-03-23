@@ -32,7 +32,7 @@ import (
 )
 
 var clearSuffix string
-var clearContain string
+var clearKey string
 
 // cleanCmd represents the clean command
 var cleanCmd = &cobra.Command{
@@ -51,9 +51,9 @@ var cleanCmd = &cobra.Command{
 				}
 			}
 
-			// 按 后缀清理
-			if clearContain != "" {
-				if strings.Contains(v, clearContain) {
+			// 按关键字清理
+			if clearKey != "" {
+				if strings.Contains(v, clearKey) {
 					fmt.Println("过滤掉：", v)
 					cache.SRem(key, v)
 				}
@@ -67,6 +67,6 @@ var cleanCmd = &cobra.Command{
 func init() {
 	// 本地标志, 此处进队cleanCmd有效
 	cleanCmd.Flags().StringVar(&clearSuffix, "suffix", "", "需要清理掉的文件类型")
-	cleanCmd.Flags().StringVarP(&clearContain, "contain", "C", "", "包含该值")
+	cleanCmd.Flags().StringVarP(&clearKey, "keywords", "k", "", "关键字")
 	rootCmd.AddCommand(cleanCmd)
 }
