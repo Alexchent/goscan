@@ -46,28 +46,18 @@ func defaultConfig() *Config {
 }
 
 // InitConf 初始化配置，返回错误以便调用方处理
-func InitConf(conf string) error {
-	// 设置默认配置
+func InitConf(c string) error {
 	Conf = defaultConfig()
-
-	if len(conf) == 0 {
-		dir, err := os.UserHomeDir()
-		if err != nil {
-			return fmt.Errorf("获取用户目录失败: %w", err)
-		}
-		conf = dir + "/.scan.yaml"
-	}
-
 	// 检查配置文件是否存在
-	if _, err := os.Stat(conf); os.IsNotExist(err) {
-		fmt.Printf("配置文件不存在，使用默认配置: %s\n", conf)
+	if _, err := os.Stat(c); os.IsNotExist(err) {
+		// 设置默认配置
+		fmt.Printf("配置文件不存在，使用默认配置: %s\n", c)
 	} else {
 		// 配置文件存在，读取并合并
-		viper.SetConfigFile(conf)
+		viper.SetConfigFile(c)
 		if err := viper.ReadInConfig(); err != nil {
 			return fmt.Errorf("读取配置文件失败: %w", err)
 		}
-
 		// 将读取的配置信息覆盖默认配置
 		if err := viper.Unmarshal(Conf); err != nil {
 			return fmt.Errorf("解析配置文件失败: %w", err)
@@ -87,7 +77,7 @@ func InitConf(conf string) error {
 
 	// 初始化 Redis 连接
 	if err := cache.NewRedis(Conf.Cache.Addr, Conf.Cache.Password, Conf.Cache.DB); err != nil {
-		return fmt.Errorf("Redis 连接失败: %w", err)
+		return fmt.Errorf("redis 连接失败: %w", err)
 	}
 
 	return nil

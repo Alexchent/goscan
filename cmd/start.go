@@ -61,7 +61,13 @@ func getScanPath() (string, error) {
 	// 处理特殊路径
 	switch p {
 	case "":
-		return "", fmt.Errorf("路径不能为空")
+		//默认使用 Downloads 目录
+		fmt.Println("警告: 不建议扫描根目录，将使用默认目录")
+		dir, err := homedir.Dir()
+		if err != nil {
+			return "", fmt.Errorf("获取用户目录失败: %w", err)
+		}
+		return dir + "/Downloads", nil
 	case ".":
 		wd, err := os.Getwd()
 		if err != nil {
@@ -69,13 +75,8 @@ func getScanPath() (string, error) {
 		}
 		return wd, nil
 	case "/":
-		// 根目录扫描风险较大，默认使用 Downloads 目录
-		fmt.Println("警告: 不建议扫描根目录，将使用默认目录")
-		dir, err := homedir.Dir()
-		if err != nil {
-			return "", fmt.Errorf("获取用户目录失败: %w", err)
-		}
-		return dir + "/Downloads", nil
+		// 根目录扫描风险较大，
+		return "", fmt.Errorf("根目录扫描风险较大，请重新选择")
 	default:
 		// 处理 ~ 开头的路径
 		if strings.HasPrefix(p, "~") {

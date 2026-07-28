@@ -3,11 +3,12 @@ package service
 import (
 	_ "embed"
 	"fmt"
-	"github.com/Alexchent/goscan/help"
 	"os"
+
+	"github.com/Alexchent/goscan/help"
 )
 
-//go:embed scan.yaml
+//go:embed example.yaml
 var configData string
 
 func MakeConfig(outputConf string) {
