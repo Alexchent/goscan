@@ -11,7 +11,8 @@ import (
 )
 
 type Config struct {
-	// Dir 保存日志文件与 scan.db 的目录路径
+	// Dir 保存日志文件与 scan.db 的目录路径。
+	// 留空表示使用工作区目录（即配置文件所在目录）。
 	Dir        string   `mapstructure:"Dir"`
 	FilterType []string `mapstructure:"FilterType"`
 	Sqlite     struct {
@@ -20,15 +21,22 @@ type Config struct {
 	LogPath string `mapstructure:"LogPath"`
 	// DB 在 InitConf 中初始化，持有共享的 SQLite 访问入口
 	DB *model.ScanFile
+	// Workspace 是当前工作区目录（绝对路径），由 InitConf 设置
+	Workspace string
 }
 
 var Conf = &Config{}
 var FilterSuffix map[string]struct{}
 
-// defaultConfig 返回默认配置
+// UserHomeDir 返回用户 Home 目录，对外暴露避免多处重复实现。
+func UserHomeDir() (string, error) {
+	return os.UserHomeDir()
+}
+
+// defaultConfig 返回默认配置（Dir 为空，表示用工作区目录）
 func defaultConfig() *Config {
-	c := &Config{
-		Dir: "./scanLog",
+	return &Config{
+		Dir: "",
 		FilterType: []string{
 			"js",
 			"torrent",
@@ -36,38 +44,60 @@ func defaultConfig() *Config {
 			"tiff",
 		},
 	}
-	c.Sqlite.DSN = filepath.Join(c.Dir, "scan.db")
-	return c
 }
 
-// InitConf 初始化配置，返回错误以便调用方处理
-func InitConf(c string) error {
+// InitConf 加载配置文件并初始化 SQLite。
+// workspace 为工作区目录（已解析为绝对路径），cfgFile 为可选的显式配置文件。
+// 两者都为空时使用默认工作区 ~/.scan。若配置文件不存在则返回错误（要求先 scan init）。
+func InitConf(workspace, cfgFile string) error {
 	Conf = defaultConfig()
-	// 检查配置文件是否存在
-	if _, err := os.Stat(c); os.IsNotExist(err) {
-		// 设置默认配置
-		fmt.Printf("配置文件不存在，使用默认配置: %s\n", c)
-	} else {
-		// 配置文件存在，读取并合并
-		viper.SetConfigFile(c)
-		if err := viper.ReadInConfig(); err != nil {
-			return fmt.Errorf("读取配置文件失败: %w", err)
+
+	// 确定工作区
+	ws := workspace
+	if ws == "" && cfgFile == "" {
+		home, e := os.UserHomeDir()
+		if e != nil {
+			return fmt.Errorf("获取用户目录失败: %w", e)
 		}
-		// 将读取的配置信息覆盖默认配置
-		if err := viper.Unmarshal(Conf); err != nil {
-			return fmt.Errorf("解析配置文件失败: %w", err)
-		}
-		// 若配置未显式给出 DSN，则按 Dir 推导，保证两者一致
-		if Conf.Sqlite.DSN == "" {
-			Conf.Sqlite.DSN = filepath.Join(strings.TrimRight(Conf.Dir, "/"), "scan.db")
-		}
+		ws = filepath.Join(home, ".scan")
+	}
+	Conf.Workspace = ws
+
+	// 确定配置文件路径
+	path := cfgFile
+	if path == "" {
+		path = filepath.Join(ws, ".scan.yaml")
 	}
 
-	// 确保目录存在，避免 gorm.Open 创建 db 文件失败
-	if Conf.Dir != "" {
-		if err := os.MkdirAll(Conf.Dir, 0755); err != nil {
-			return fmt.Errorf("创建目录失败: %w", err)
-		}
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return fmt.Errorf("配置文件不存在: %s\n请先执行 scan init 初始化工作区", path)
+	}
+
+	viper.SetConfigFile(path)
+	if err := viper.ReadInConfig(); err != nil {
+		return fmt.Errorf("读取配置文件失败: %w", err)
+	}
+	if err := viper.Unmarshal(Conf); err != nil {
+		return fmt.Errorf("解析配置文件失败: %w", err)
+	}
+
+	// Dir 为空时，使用配置文件所在目录（即工作区目录）
+	if Conf.Dir == "" {
+		Conf.Dir = filepath.Dir(path)
+	}
+	Conf.Dir = strings.TrimRight(Conf.Dir, "/")
+	if Conf.Dir == "" {
+		Conf.Dir = "."
+	}
+
+	// DSN 为空时按 Dir 推导
+	if Conf.Sqlite.DSN == "" {
+		Conf.Sqlite.DSN = filepath.Join(Conf.Dir, "scan.db")
+	}
+
+	// 确保目录存在
+	if err := os.MkdirAll(Conf.Dir, 0755); err != nil {
+		return fmt.Errorf("创建目录失败: %w", err)
 	}
 
 	// 初始化过滤后缀映射
@@ -76,11 +106,8 @@ func InitConf(c string) error {
 		FilterSuffix[suffix] = struct{}{}
 	}
 
-	// 初始化 SQLite（替换原 Redis 连接）
-	// 注意：NewScanFile 接收的是目录路径，db 文件名为 scan.db
-	dbDir := strings.TrimRight(Conf.Dir, "/")
-	Conf.DB = model.NewScanFile(dbDir)
-
+	// 初始化 SQLite
+	Conf.DB = model.NewScanFile(Conf.Dir)
 	return nil
 }
 
@@ -92,5 +119,5 @@ func (c *Config) SqLPath() string {
 	if c.Dir == "" {
 		return "scan.db"
 	}
-	return filepath.Join(strings.TrimRight(c.Dir, "/"), "scan.db")
+	return filepath.Join(c.Dir, "scan.db")
 }

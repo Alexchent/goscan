@@ -1,4 +1,7 @@
-Dir: "./scanLog"  # 数据库 scan.db 与日志文件的保存目录
+# 工作区配置文件
+# Dir 留空表示使用工作区目录本身（即本配置文件所在目录）。
+# 数据库 scan.db、have_save_file.log、导出文件等都会落在此目录。
+Dir: ""
 FilterType:
   - "js"
   - "torrent"
@@ -6,4 +9,4 @@ FilterType:
   - "tiff"
 # Sqlite 可选，缺省时自动使用 Dir 目录下的 scan.db
 # Sqlite:
-#   DSN: "./scanLog/scan.db"
+#   DSN: "scan.db"
