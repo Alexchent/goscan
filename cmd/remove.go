@@ -19,7 +19,9 @@ var removeCmd = &cobra.Command{
 	Long:  `移动重复文件`,
 	Run: func(cmd *cobra.Command, args []string) {
 		start := time.Now()
-		defer fmt.Println("扫描完成，耗时：", time.Since(start))
+		defer func() {
+			fmt.Println("扫描完成，耗时：", time.Since(start))
+		}()
 
 		if file == "" {
 			fmt.Println(file + "\t文件不存在")
@@ -28,7 +30,9 @@ var removeCmd = &cobra.Command{
 
 		readFile, err := os.ReadFile(file)
 		if err != nil {
-			panic("打开文件失败: " + err.Error())
+			// panic 之后紧跟 return 是不可达代码；保留 panic 行为时 return 没有意义，
+			// 这里改为打印错误后 return，避免进程崩溃并消除 vet 的 unreachable code 报错。
+			fmt.Println("打开文件失败:", err)
 			return
 		}
 

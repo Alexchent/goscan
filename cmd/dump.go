@@ -14,16 +14,27 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// 这两个常量仅在 dump 命令中使用，从原 root.go 迁移至此。
+// saveDirSuffix 只是路径后缀片段，必须拼接到某个 base 目录之后使用，
+// 切勿当作完整目录路径直接传给 os.MkdirAll 之类，否则会操作根目录 "/scanLog"。
+const (
+	saveDirSuffix = "/scanLog"
+	saveFileFmt   = "have_save_file_%d.txt"
+)
+
 var output string
 
 // exportCmd represents the export command
 var exportCmd = &cobra.Command{
 	Use:   "dump",
-	Short: "将所有记录到处到文件中",
-	Long:  `将所有记录到处到文件中`,
+	Short: "将所有记录处出到文件中",
+	Long:  `将所有记录处出到文件中`,
 	Run: func(cmd *cobra.Command, args []string) {
 		start := time.Now()
-		defer fmt.Println("文件导出完成，用时：", time.Since(start))
+		defer func() {
+			fmt.Println("文件导出完成，用时：", time.Since(start))
+		}()
+
 		var saveDir string
 
 		if output != "" {
@@ -32,26 +43,33 @@ var exportCmd = &cobra.Command{
 			saveDir = config.Conf.Dir
 		} else {
 			dir, _ := os.UserHomeDir()
-			saveDir = dir + SaveDir
+			saveDir = dir + saveDirSuffix
 		}
 		fmt.Println("导出文件的路径:", saveDir)
 
 		help.CreateDateDir(saveDir)
 
-		var data []string
-		filename := fmt.Sprintf(saveDir+"/"+SavePath, time.Now().Unix())
-		fd, _ := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+		// 导出文件的全路径
+		exportPath := fmt.Sprintf(saveDir+"/"+saveFileFmt, time.Now().Unix())
+		fd, err := os.OpenFile(exportPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+		if err != nil {
+			fmt.Printf("打开导出文件失败: %v\n", err)
+			return
+		}
+		defer func() {
+			_ = fd.Close()
+		}()
 
-		data = cache.SMembers(logic.CacheKey)
+		data := cache.SMembers(logic.CacheKey)
 		//svc := logic.NewSaveLogic(*mconf.Conf)
 		// 过滤掉换行符
 		for _, v := range data {
-			filename = strings.Trim(v, "\n")
-			_, err := fd.WriteString(filename + "\n")
-			if err != nil {
-				panic("文件写失败：" + v)
+			line := strings.Trim(v, "\n")
+			if _, err := fd.WriteString(line + "\n"); err != nil {
+				fmt.Printf("文件写失败: %v (内容: %s)\n", err, line)
+				return
 			}
-			//svc.Save(filename)
+			//svc.Save(exportPath)
 		}
 	},
 }

@@ -48,7 +48,7 @@ var startCmd = &cobra.Command{
 
 // getScanPath 获取扫描路径
 func getScanPath() (string, error) {
-	p := strings.TrimSpace(path)
+	p := strings.TrimSpace(scanDir)
 	if p == "" {
 		fmt.Printf("请输入要扫描的目录: ")
 		_, err := fmt.Scan(&p)
@@ -108,6 +108,6 @@ func validatePath(p string) error {
 }
 
 func init() {
-	startCmd.Flags().StringVarP(&path, "dir", "d", "", "需要扫描的目录")
+	startCmd.Flags().StringVarP(&scanDir, "dir", "d", "", "需要扫描的目录")
 	rootCmd.AddCommand(startCmd)
 }

@@ -364,19 +364,19 @@ var duplicateCmd = &cobra.Command{
 		start := time.Now()
 
 		// 检查目录参数
-		if path == "" {
+		if scanDir == "" {
 			fmt.Printf("请输入要扫描的目录: ")
-			_, _ = fmt.Scan(&path)
+			_, _ = fmt.Scan(&scanDir)
 		}
 
-		_, err := os.Stat(path)
+		_, err := os.Stat(scanDir)
 		if err != nil {
 			fmt.Println(color.RedString("错误: %v", err))
 			return
 		}
 
 		fmt.Println(color.CyanString("========================================"))
-		fmt.Println(color.CyanString("开始扫描目录: %s", path))
+		fmt.Println(color.CyanString("开始扫描目录: %s", scanDir))
 		fmt.Println(color.CyanString("========================================"))
 
 		// 使用 channel 进行并发处理
@@ -390,7 +390,7 @@ var duplicateCmd = &cobra.Command{
 
 		// 启动扫描 goroutine
 		go func() {
-			walkFiles(path, &scanWg, fileChan, &fileCount, &countMutex)
+			walkFiles(scanDir, &scanWg, fileChan, &fileCount, &countMutex)
 		}()
 
 		// 收集结果
@@ -419,7 +419,7 @@ var duplicateCmd = &cobra.Command{
 		printToConsole(results, fileCount, start)
 
 		// 保存到 CSV 文件
-		// saveToCSV(results, path)
+		// saveToCSV(results, scanDir)
 
 		// 只有找到重复文件时才启动 Web 服务器
 		if len(results) > 0 {
@@ -767,6 +767,6 @@ func isCommandAvailable(name string) bool {
 }
 
 func init() {
-	duplicateCmd.Flags().StringVarP(&path, "dir", "d", "", "扫描的目录")
+	duplicateCmd.Flags().StringVarP(&scanDir, "dir", "d", "", "扫描的目录")
 	rootCmd.AddCommand(duplicateCmd)
 }
