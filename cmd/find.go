@@ -19,7 +19,7 @@ var findCmd = &cobra.Command{
 			return
 		}
 		count := 0
-		count += logic.SearchFromRedisSet(logic.CacheKey, keyword)
+		count += logic.Search(keyword)
 		res := fmt.Sprintf("本次扫描发现 %d 个文件", count)
 		fmt.Println(res)
 	},

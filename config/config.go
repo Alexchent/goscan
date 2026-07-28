@@ -3,25 +3,23 @@ package config
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
-	"github.com/Alexchent/goscan/cache"
+	"github.com/Alexchent/goscan/model"
 	"github.com/spf13/viper"
 )
 
 type Config struct {
-	Dir        string   // 保存日志文件的路径，不含文件
-	FilterType []string // 需要过滤掉的文件类型，多个之间逗号分隔
-	Cache      *Cache
-	LogPath    string
+	// Dir 保存日志文件与 scan.db 的目录路径
+	Dir        string   `mapstructure:"Dir"`
+	FilterType []string `mapstructure:"FilterType"`
 	Sqlite     struct {
-		DSN string
-	}
-}
-
-type Cache struct {
-	Addr     string
-	Password string
-	DB       int
+		DSN string `mapstructure:"DSN"`
+	} `mapstructure:"Sqlite"`
+	LogPath string `mapstructure:"LogPath"`
+	// DB 在 InitConf 中初始化，持有共享的 SQLite 访问入口
+	DB *model.ScanFile
 }
 
 var Conf = &Config{}
@@ -29,7 +27,7 @@ var FilterSuffix map[string]struct{}
 
 // defaultConfig 返回默认配置
 func defaultConfig() *Config {
-	return &Config{
+	c := &Config{
 		Dir: "./scanLog",
 		FilterType: []string{
 			"js",
@@ -37,12 +35,9 @@ func defaultConfig() *Config {
 			"downloading",
 			"tiff",
 		},
-		Cache: &Cache{
-			Addr:     "localhost:6379",
-			Password: "",
-			DB:       0,
-		},
 	}
+	c.Sqlite.DSN = filepath.Join(c.Dir, "scan.db")
+	return c
 }
 
 // InitConf 初始化配置，返回错误以便调用方处理
@@ -62,11 +57,17 @@ func InitConf(c string) error {
 		if err := viper.Unmarshal(Conf); err != nil {
 			return fmt.Errorf("解析配置文件失败: %w", err)
 		}
+		// 若配置未显式给出 DSN，则按 Dir 推导，保证两者一致
+		if Conf.Sqlite.DSN == "" {
+			Conf.Sqlite.DSN = filepath.Join(strings.TrimRight(Conf.Dir, "/"), "scan.db")
+		}
 	}
 
-	// 验证必要配置
-	if Conf.Cache == nil {
-		return fmt.Errorf("配置缺少 Cache 配置项")
+	// 确保目录存在，避免 gorm.Open 创建 db 文件失败
+	if Conf.Dir != "" {
+		if err := os.MkdirAll(Conf.Dir, 0755); err != nil {
+			return fmt.Errorf("创建目录失败: %w", err)
+		}
 	}
 
 	// 初始化过滤后缀映射
@@ -75,10 +76,21 @@ func InitConf(c string) error {
 		FilterSuffix[suffix] = struct{}{}
 	}
 
-	// 初始化 Redis 连接
-	if err := cache.NewRedis(Conf.Cache.Addr, Conf.Cache.Password, Conf.Cache.DB); err != nil {
-		return fmt.Errorf("redis 连接失败: %w", err)
-	}
+	// 初始化 SQLite（替换原 Redis 连接）
+	// 注意：NewScanFile 接收的是目录路径，db 文件名为 scan.db
+	dbDir := strings.TrimRight(Conf.Dir, "/")
+	Conf.DB = model.NewScanFile(dbDir)
 
 	return nil
+}
+
+// SqLPath 返回当前 SQLite 数据库文件的完整路径，供外部展示
+func (c *Config) SqLPath() string {
+	if c.Sqlite.DSN != "" {
+		return c.Sqlite.DSN
+	}
+	if c.Dir == "" {
+		return "scan.db"
+	}
+	return filepath.Join(strings.TrimRight(c.Dir, "/"), "scan.db")
 }

@@ -22,8 +22,6 @@ var startCmd = &cobra.Command{
 		start := time.Now()
 		defer func() {
 			fmt.Println("扫描完成，耗时：", time.Since(start))
-			// 确保程序退出时关闭日志文件
-			_ = logic.CloseLogfile()
 		}()
 
 		// 获取扫描路径
@@ -40,7 +38,7 @@ var startCmd = &cobra.Command{
 		}
 
 		color.HiGreen.Println("开始扫描：", scanPath)
-		if err := logic.Save(logic.CacheKey, scanPath, config.FilterSuffix); err != nil {
+		if err := logic.Save(scanPath, config.FilterSuffix); err != nil {
 			fmt.Printf("扫描出错: %v\n", err)
 		}
 	},

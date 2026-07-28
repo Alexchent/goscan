@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Alexchent/goscan/cache"
 	"github.com/Alexchent/goscan/logic"
 	"github.com/spf13/cobra"
 )
@@ -31,7 +30,7 @@ var (
 			fileScanner.Split(bufio.ScanLines)
 			for fileScanner.Scan() {
 				if fileScanner.Text() != "" {
-					if cache.SAdd(logic.CacheKey, fileScanner.Text()) == 1 {
+					if logic.LoadRecord(fileScanner.Text()) {
 						fmt.Println("写入：", fileScanner.Text())
 					}
 				}

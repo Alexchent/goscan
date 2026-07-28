@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Alexchent/goscan/cache"
 	"github.com/Alexchent/goscan/config"
 	"github.com/Alexchent/goscan/help"
 	"github.com/Alexchent/goscan/logic"
@@ -60,7 +59,7 @@ var exportCmd = &cobra.Command{
 			_ = fd.Close()
 		}()
 
-		data := cache.SMembers(logic.CacheKey)
+		data := logic.AllRecords()
 		//svc := logic.NewSaveLogic(*mconf.Conf)
 		// 过滤掉换行符
 		for _, v := range data {

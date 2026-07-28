@@ -1,10 +1,9 @@
-Dir: "./scanLog"  # 默认HOME目录
+Dir: "./scanLog"  # 数据库 scan.db 与日志文件的保存目录
 FilterType:
   - "js"
   - "torrent"
   - "downloading"
   - "tiff"
-Cache:
-  Addr: "localhost:6379"
-  Password: ""
-  DB: 0
+# Sqlite 可选，缺省时自动使用 Dir 目录下的 scan.db
+# Sqlite:
+#   DSN: "./scanLog/scan.db"

@@ -20,5 +20,5 @@ func Test_scanFile_Find(t *testing.T) {
 	t.Log("fullFileName: " + data.FullFileName)
 	t.Log("fileMd5: " + data.FileMD5)
 	t.Logf("fileSize: %d", data.Size)
-	t.Logf("created:" + data.Created.Format(time.DateTime))
+	t.Logf("created: %s", data.Created.Format(time.DateTime))
 }

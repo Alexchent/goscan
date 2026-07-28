@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/Alexchent/goscan/config"
+	"github.com/Alexchent/goscan/logic"
 	"github.com/spf13/cobra"
 )
 
@@ -43,4 +44,7 @@ func initConfig() {
 		fmt.Printf("配置初始化失败: %v\n", err)
 		os.Exit(1)
 	}
+	// 把 config 初始化好的 SQLite 入口注入 logic 层，
+	// 供 scan/find/clean/dump/load 等子命令共享。
+	logic.SetDB(config.Conf.DB)
 }
