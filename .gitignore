@@ -8,3 +8,4 @@ etc
 .DS_Store
 *.log
 goscan
+.scan

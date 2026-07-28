@@ -83,31 +83,7 @@ func GetFileMd5(filename string) string {
 	if _, err := io.Copy(h, file); err != nil {
 		log.Fatal(err)
 	}
-	//fmt.Printf("%x\n", h.Sum(nil))
 	return fmt.Sprintf("%x", h.Sum(nil))
-
-	// 获取文件的sha1
-	//h := sha1.New()
-	//if _, err := io.Copy(h, file); err != nil {
-	//	log.Fatal(err)
-	//}
-	//fmt.Printf("%x\n", h.Sum(nil))
-
-	// 获取文件的sha256
-	//h := sha256.New()
-	//if _, err := io.Copy(h, file); err != nil {
-	//	log.Fatal(err)
-	//}
-	//fmt.Printf("%x\n", h.Sum(nil))
-
-	// 获取文件的sha512
-	//h := sha512.New()
-	//if _, err := io.Copy(h, file); err != nil {
-	//	log.Fatal(err)
-	//}
-	//fmt.Printf("%x\n", h.Sum(nil))
-
-	return ""
 }
 
 func FileIsExist(file string) bool {
