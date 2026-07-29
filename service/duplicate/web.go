@@ -10,12 +10,12 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/Alexchent/goscan/help"
+	"github.com/Alexchent/goscan/pkg"
 	"github.com/fatih/color"
 )
 
 const (
-	webPort = 8080
+	webPort      = 8080
 	templateHTML = `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -338,7 +338,7 @@ func startWebServer() {
 			TotalFiles:      totalFilesScanned,
 			DuplicateGroups: len(scanResults),
 			DuplicateCount:  duplicateCount,
-			SavedSpace:      help.FormatFileSize1000(totalSaved),
+			SavedSpace:      pkg.FormatFileSize1000(totalSaved),
 			Results:         scanResults,
 		}
 
@@ -408,7 +408,7 @@ func startWebServer() {
 					r.MD5,
 					r.SizeFormatted,
 					fmt.Sprintf("%d", r.Count),
-					help.FormatFileSize1000(r.Saved),
+					pkg.FormatFileSize1000(r.Saved),
 					fileInfo.Path,
 				}
 				if j == 0 {

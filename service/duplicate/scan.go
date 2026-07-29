@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Alexchent/goscan/help"
+	"github.com/Alexchent/goscan/pkg"
 	"github.com/fatih/color"
 )
 
@@ -51,7 +51,7 @@ func walkFiles(dir string, wg *sync.WaitGroup, ch chan *DuplicateFile, fileCount
 			// 发送到 channel
 			ch <- &DuplicateFile{
 				FullFileName: fullName,
-				MD5:          help.GetFileMd5(fullName),
+				MD5:          pkg.GetFileMd5(fullName),
 				Size:         info.Size(),
 			}
 		}
@@ -73,7 +73,7 @@ func processResults(fileList map[string][]*DuplicateFile) []DuplicateResult {
 					Name:          filepath.Base(f.FullFileName),
 					Path:          f.FullFileName,
 					Size:          f.Size,
-					SizeFormatted: help.FormatFileSize1000(f.Size),
+					SizeFormatted: pkg.FormatFileSize1000(f.Size),
 				})
 				size = f.Size
 			}
@@ -82,7 +82,7 @@ func processResults(fileList map[string][]*DuplicateFile) []DuplicateResult {
 				MD5:           md5,
 				Files:         fileInfos,
 				Size:          size,
-				SizeFormatted: help.FormatFileSize1000(size),
+				SizeFormatted: pkg.FormatFileSize1000(size),
 				Count:         len(files),
 				Saved:         size * int64(len(files)-1),
 			})
@@ -114,7 +114,7 @@ func printToConsole(results []DuplicateResult, totalFiles int64, start time.Time
 		duplicateCount += r.Count - 1
 	}
 	fmt.Printf("重复文件数: %s\n", color.YellowString("%d", duplicateCount))
-	fmt.Printf("可节省空间: %s\n", color.RedString(help.FormatFileSize1000(totalSaved)))
+	fmt.Printf("可节省空间: %s\n", color.RedString(pkg.FormatFileSize1000(totalSaved)))
 
 	fmt.Println(color.CyanString("\n----------------------------------------"))
 	fmt.Println(color.CyanString("重复文件详情:"))
@@ -175,7 +175,7 @@ func saveToCSV(results []DuplicateResult, scanPath string) {
 				r.MD5,
 				r.SizeFormatted,
 				fmt.Sprintf("%d", r.Count),
-				help.FormatFileSize1000(r.Saved),
+				pkg.FormatFileSize1000(r.Saved),
 				fileInfo.Path,
 			}
 			if j == 0 {

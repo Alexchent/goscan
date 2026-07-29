@@ -9,8 +9,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Alexchent/goscan/help"
 	"github.com/Alexchent/goscan/model"
+	"github.com/Alexchent/goscan/pkg"
 	"github.com/gookit/color"
 )
 
@@ -113,9 +113,9 @@ func Save(filePath string, filterType map[string]struct{}) (err error) {
 			file := fmt.Sprintf("%s,%d", path, info.Size())
 			// 使用互斥锁保护写入操作
 			logger.mu.Lock()
-			_, _ = logger.bw.WriteString(file + help.FormatFileSize1000(info.Size()) + "\n")
+			_, _ = logger.bw.WriteString(file + pkg.FormatFileSize1000(info.Size()) + "\n")
 			logger.mu.Unlock()
-			fmt.Printf("new file %s %s\n", path, color.HiGreen.Sprint(help.FormatFileSize1000(info.Size())))
+			fmt.Printf("new file %s %s\n", path, color.HiGreen.Sprint(pkg.FormatFileSize1000(info.Size())))
 		}
 		return nil
 	})

@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Alexchent/goscan/help"
+	"github.com/Alexchent/goscan/pkg"
 )
 
 //go:embed example.yaml
@@ -20,7 +20,7 @@ func MakeConfig(workspaceDir string) error {
 	}
 
 	filename := filepath.Join(workspaceDir, ".scan.yaml")
-	if help.FileIsExist(filename) {
+	if pkg.FileIsExist(filename) {
 		fmt.Println("配置文件已存在:", filename)
 		return nil
 	}

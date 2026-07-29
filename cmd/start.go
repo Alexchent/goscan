@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/Alexchent/goscan/config"
-	"github.com/Alexchent/goscan/help"
+	"github.com/Alexchent/goscan/pkg"
 	"github.com/Alexchent/goscan/service"
 	"github.com/gookit/color"
 	"github.com/spf13/cobra"
@@ -23,14 +23,14 @@ var startCmd = &cobra.Command{
 		}()
 
 		// 获取扫描路径
-		scanPath, err := help.GetScanPath(scanDir)
+		scanPath, err := pkg.GetScanPath(scanDir)
 		if err != nil {
 			fmt.Printf("错误: %v\n", err)
 			return
 		}
 
 		// 验证路径
-		if err := help.ValidatePath(scanPath); err != nil {
+		if err := pkg.ValidatePath(scanPath); err != nil {
 			fmt.Printf("路径验证失败: %v\n", err)
 			return
 		}

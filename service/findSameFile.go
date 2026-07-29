@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"path"
 
-	"github.com/Alexchent/goscan/help"
+	"github.com/Alexchent/goscan/pkg"
 )
 
 // FileList map的key是文件的md5，value是文件的路径
@@ -20,7 +20,7 @@ func RemoveSameFile(file FileList) {
 		if len(v) > 1 {
 			// 保留第一个文件，删除其他文件
 			for _, v := range v[1:] {
-				encoded := help.MD5(v)
+				encoded := pkg.MD5(v)
 				cmd := exec.Command("mv", v, "/Users/chentao/same/"+encoded+"-"+path.Base(v))
 				output, err := cmd.CombinedOutput()
 				if err != nil {
