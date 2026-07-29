@@ -7,17 +7,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var keyword string
+
 // findCmd represents the find command
 var findCmd = &cobra.Command{
 	Use:   "find",
 	Short: "查找文件",
 	Long:  `从记录中查找是否存在指定文件，返回文件路径`,
 	Run: func(cmd *cobra.Command, args []string) {
-		var keyword string
-		fmt.Printf("请输入要查询的文件:\n")
-		_, err := fmt.Scan(&keyword)
-		if err != nil {
-			return
+		if len(keyword) == 0 {
+			fmt.Printf("请输入要查询的文件:\n")
+			_, err := fmt.Scan(&keyword)
+			if err != nil {
+				return
+			}
 		}
 		count := 0
 		count += service.Search(keyword)
@@ -27,5 +30,6 @@ var findCmd = &cobra.Command{
 }
 
 func init() {
+	findCmd.Flags().StringVarP(&keyword, "keywords", "k", "", "关键字")
 	rootCmd.AddCommand(findCmd)
 }
