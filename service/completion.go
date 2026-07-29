@@ -1,8 +1,9 @@
-package cmd
+package service
 
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -15,25 +16,27 @@ const (
 	scanCompletionMarkEnd   = "# <<< scan completion <<<"
 )
 
-// installCompletion 在工作区目录 w 下生成 zsh 补全脚本文件 _scan（总是覆盖，保证内容
+// InstallCompletion 在工作区目录 w 下生成 zsh 补全脚本文件 _scan（总是覆盖，保证内容
 // 与当前子命令一致），并将其 source 行以标记块形式追加到用户 ~/.zshrc 中（若尚未安装）。
+//
+// genScript 由调用方（cmd 层）传入，负责把补全脚本内容写入给定的 io.Writer，
+// 例如 rootCmd.GenZshCompletion。这样 service 包无需反向依赖 cmd 包。
 //
 // 幂等：多次调用安全。
 //   - _scan 文件每次覆盖刷新；
 //   - .zshrc 仅在缺失标记块时追加一次，绝不重复。
 //
 // 失败不 panic，仅返回 error 由调用方决定是否中断流程。
-func installCompletion(w string) error {
+func InstallCompletion(w string, genScript func(io.Writer) error) error {
 	completionFile := filepath.Join(w, "_scan")
 
 	// 1. 生成补全脚本文件（覆盖）。
-	// rootCmd 的所有子命令在包 init() 阶段已注册完毕，此处可直接生成。
 	fd, err := os.OpenFile(completionFile, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return fmt.Errorf("创建补全文件失败: %w", err)
 	}
 	defer fd.Close()
-	if err := rootCmd.GenZshCompletion(fd); err != nil {
+	if err := genScript(fd); err != nil {
 		return fmt.Errorf("生成补全脚本失败: %w", err)
 	}
 	fmt.Println("已生成补全脚本:", completionFile)
