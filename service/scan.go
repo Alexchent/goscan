@@ -95,6 +95,10 @@ func Save(filePath string, filterType map[string]struct{}) (err error) {
 			return nil
 		}
 		if info.IsDir() {
+			// 如果是影藏目录，跳过整个目录及其子项
+			if info.Name()[0] == '.' {
+				return filepath.SkipDir
+			}
 			return nil
 		}
 		// 如果是影藏文件，直接跳过
