@@ -37,6 +37,11 @@ var initCmd = &cobra.Command{
 		fmt.Println("初始化完成。")
 		fmt.Println("工作区配置文件：", w+"/.scan.yaml")
 		fmt.Println("后续命令将自动使用该工作区，可用 -w 切换其它工作区。")
+
+		// 生成 zsh 补全脚本并追加到 ~/.zshrc（幂等）。补全安装失败不影响工作区初始化。
+		if err := installCompletion(w); err != nil {
+			fmt.Printf("⚠️ 补全安装失败（不影响工作区初始化）: %v\n", err)
+		}
 	},
 }
 

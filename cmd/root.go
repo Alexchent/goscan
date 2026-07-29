@@ -59,4 +59,6 @@ func Execute() error {
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "配置文件路径（优先级高于 -w）")
 	rootCmd.PersistentFlags().StringVarP(&workspace, "workspace", "w", "", "工作区目录，默认 ~/.scan")
+	// 关闭 cobra 默认注册的 completion 子命令
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
 }
