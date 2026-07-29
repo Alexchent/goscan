@@ -8,6 +8,7 @@ import (
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"gorm.io/gorm/logger"
 )
 
 // ScanRecord 扫描去重记录表，存原始 "path,size"。
@@ -36,13 +37,35 @@ type ScanFile struct {
 // 接口完整性校验
 var _ IScanFile = (*ScanFile)(nil)
 
+// parseLogLevel 将配置文件中的字符串级别解析为 gorm logger.LogLevel。
+// 取值（大小写不敏感）：silent / error / warn / info。
+// 空字符串或无法识别时默认 silent，避免打印慢 SQL 等噪声日志。
+func parseLogLevel(s string) logger.LogLevel {
+	switch strings.ToLower(strings.TrimSpace(s)) {
+	case "error":
+		return logger.Error
+	case "warn":
+		return logger.Warn
+	case "info":
+		return logger.Info
+	case "silent", "":
+		return logger.Silent
+	default:
+		return logger.Silent
+	}
+}
+
 // NewScanFile 打开/创建 SQLite 数据库（scan.db）并迁移 schema。
 // dsn 为目录路径，数据库文件落在该目录下。
-func NewScanFile(dsn string) *ScanFile {
+// logLevel 控制 GORM SQL 日志级别，取值见 parseLogLevel：silent/error/warn/info。
+// 传空字符串时默认 silent（不输出任何 SQL 日志）。
+func NewScanFile(dsn, logLevel string) *ScanFile {
 	if len(dsn) > 0 && dsn[len(dsn)-1] != '/' {
 		dsn += "/"
 	}
-	db, err := gorm.Open(sqlite.Open(dsn+"scan.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(dsn+"scan.db"), &gorm.Config{
+		Logger: logger.Default.LogMode(parseLogLevel(logLevel)),
+	})
 	if err != nil {
 		panic("failed to connect database")
 	}

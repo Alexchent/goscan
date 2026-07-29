@@ -10,3 +10,9 @@ FilterType:
 # Sqlite 可选，缺省时自动使用 Dir 目录下的 scan.db
 # Sqlite:
 #   DSN: "scan.db"
+#   LogLevel 控制 GORM SQL 日志级别，取值：silent/error/warn/info
+#   缺省 silent，不打印任何 SQL 日志（含慢 SQL 警告，如 "SLOW SQL >= 200ms"）。
+#   排查问题时可临时改为 warn 打印慢 SQL，改为 info 打印全部 SQL。
+# Sqlite:
+#   DSN: "scan.db"
+#   LogLevel: "silent"

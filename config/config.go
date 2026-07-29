@@ -16,7 +16,10 @@ type Config struct {
 	Dir        string   `mapstructure:"Dir"`
 	FilterType []string `mapstructure:"FilterType"`
 	Sqlite     struct {
-		DSN string `mapstructure:"DSN"`
+		DSN      string `mapstructure:"DSN"`
+		// LogLevel 控制 GORM SQL 日志级别，取值：silent/error/warn/info。
+		// 缺省 silent，不打印任何 SQL 日志（含慢 SQL 警告）。
+		LogLevel string `mapstructure:"LogLevel"`
 	} `mapstructure:"Sqlite"`
 	LogPath string `mapstructure:"LogPath"`
 	// DB 在 InitConf 中初始化，持有共享的 SQLite 访问入口
@@ -106,8 +109,8 @@ func InitConf(workspace, cfgFile string) error {
 		FilterSuffix[suffix] = struct{}{}
 	}
 
-	// 初始化 SQLite
-	Conf.DB = model.NewScanFile(Conf.Dir)
+	// 初始化 SQLite（传入配置中的日志级别，缺省 silent）
+	Conf.DB = model.NewScanFile(Conf.Dir, Conf.Sqlite.LogLevel)
 	return nil
 }
 
