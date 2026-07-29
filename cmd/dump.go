@@ -6,19 +6,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Alexchent/goscan/config"
-	"github.com/Alexchent/goscan/help"
 	"github.com/Alexchent/goscan/logic"
 
 	"github.com/spf13/cobra"
 )
 
-// 这两个常量仅在 dump 命令中使用，从原 root.go 迁移至此。
-// saveDirSuffix 只是路径后缀片段，必须拼接到某个 base 目录之后使用，
-// 切勿当作完整目录路径直接传给 os.MkdirAll 之类，否则会操作根目录 "/scanLog"。
 const (
-	saveDirSuffix = "/scanLog"
-	saveFileFmt   = "have_save_file_%d.txt"
+	saveFileFmt = "have_save_file_%d.txt"
 )
 
 var output string
@@ -26,27 +20,23 @@ var output string
 // exportCmd represents the export command
 var exportCmd = &cobra.Command{
 	Use:   "dump",
-	Short: "导出记录",
-	Long:  `将历史记录导出到文件中`,
+	Short: "导出历史扫描记录到本地文件",
+	Long: `将历史扫描记录导出到本地文本文件，每条记录占一行。
+
+默认导出到当前目录，文件名格式为 have_save_file_<Unix时间戳>.txt。
+可通过 -o/--output 指定导出目录（路径必须以路径分隔符结尾，如 ./logs/ 或 /tmp/），
+否则仍导出到当前目录。`,
+	Example: `  # 导出到当前目录
+  scan dump
+
+  # 导出到指定目录（注意结尾的路径分隔符）
+  scan dump -o ./logs/
+  scan dump --output /tmp/`,
 	Run: func(cmd *cobra.Command, args []string) {
-		start := time.Now()
-		defer func() {
-			fmt.Println("文件导出完成，用时：", time.Since(start))
-		}()
-
-		var saveDir string
-
-		if output != "" {
+		saveDir := "."
+		if len(output) > 0 && os.IsPathSeparator(output[len(output)-1]) {
 			saveDir = output
-		} else if config.Conf.Dir != "" {
-			saveDir = config.Conf.Dir
-		} else {
-			dir, _ := os.UserHomeDir()
-			saveDir = dir + saveDirSuffix
 		}
-		fmt.Println("导出文件的路径:", saveDir)
-
-		help.CreateDateDir(saveDir)
 
 		// 导出文件的全路径
 		exportPath := fmt.Sprintf(saveDir+"/"+saveFileFmt, time.Now().Unix())
@@ -59,8 +49,12 @@ var exportCmd = &cobra.Command{
 			_ = fd.Close()
 		}()
 
+		start := time.Now()
+		defer func() {
+			fmt.Println("文件导出完成，用时：", time.Since(start))
+		}()
+
 		data := logic.AllRecords()
-		//svc := logic.NewSaveLogic(*mconf.Conf)
 		// 过滤掉换行符
 		for _, v := range data {
 			line := strings.Trim(v, "\n")
@@ -68,12 +62,11 @@ var exportCmd = &cobra.Command{
 				fmt.Printf("文件写失败: %v (内容: %s)\n", err, line)
 				return
 			}
-			//svc.Save(exportPath)
 		}
 	},
 }
 
 func init() {
-	exportCmd.Flags().StringVarP(&output, "output", "o", "", "导出文件路径")
+	exportCmd.Flags().StringVarP(&output, "output", "o", "", "导出目录路径（须以路径分隔符结尾，默认为当前目录）")
 	rootCmd.AddCommand(exportCmd)
 }
