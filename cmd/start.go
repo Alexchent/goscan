@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Alexchent/goscan/config"
-	"github.com/Alexchent/goscan/logic"
+	"github.com/Alexchent/goscan/service"
 	"github.com/gookit/color"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -38,7 +38,7 @@ var startCmd = &cobra.Command{
 		}
 
 		color.HiGreen.Println("开始扫描：", scanPath)
-		if err := logic.Save(scanPath, config.FilterSuffix); err != nil {
+		if err := service.Save(scanPath, config.FilterSuffix); err != nil {
 			fmt.Printf("扫描出错: %v\n", err)
 		}
 	},

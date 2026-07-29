@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Alexchent/goscan/logic"
+	"github.com/Alexchent/goscan/service"
 
 	"github.com/spf13/cobra"
 )
@@ -54,7 +54,7 @@ var exportCmd = &cobra.Command{
 			fmt.Println("文件导出完成，用时：", time.Since(start))
 		}()
 
-		data := logic.AllRecords()
+		data := service.AllRecords()
 		// 过滤掉换行符
 		for _, v := range data {
 			line := strings.Trim(v, "\n")

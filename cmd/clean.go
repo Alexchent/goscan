@@ -24,7 +24,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/Alexchent/goscan/logic"
+	"github.com/Alexchent/goscan/service"
 
 	"github.com/spf13/cobra"
 )
@@ -40,14 +40,14 @@ var cleanCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// 按后缀清理
 		if clearSuffix != "" {
-			for _, v := range logic.DeleteBySuffix(clearSuffix) {
+			for _, v := range service.DeleteBySuffix(clearSuffix) {
 				fmt.Println("过滤掉：", v)
 			}
 		}
 
 		// 按关键字清理
 		if clearKey != "" {
-			for _, v := range logic.DeleteByKeyword(clearKey) {
+			for _, v := range service.DeleteByKeyword(clearKey) {
 				fmt.Println("过滤掉：", v)
 			}
 		}

@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/Alexchent/goscan/config"
-	"github.com/Alexchent/goscan/logic"
+	"github.com/Alexchent/goscan/service"
 	"github.com/spf13/cobra"
 )
 
@@ -47,7 +47,7 @@ func loadConfig() error {
 	if err := config.InitConf(workspace, cfgFile); err != nil {
 		return err
 	}
-	logic.SetDB(config.Conf.DB)
+	service.SetDB(config.Conf.DB)
 	return nil
 }
 

@@ -1,27 +1,14 @@
 package model
 
 import (
-	"github.com/Alexchent/goscan/help"
-	"github.com/glebarez/sqlite"
-	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
-	"log"
-	"os"
 	"strconv"
 	"strings"
 	"time"
-)
 
-// MyFile 记录文件详情（按需计算 MD5），与 ScanRecord 共存。
-// ScanRecord 用于扫描去重，MyFile 用于重复文件分析。
-type MyFile struct {
-	ID           int64  `gorm:"primaryKey;autoIncrement"`
-	FullFileName string `gorm:"uniqueIndex"`
-	Size         int64  // 文件大小
-	FileMD5      string
-	Created      time.Time
-	Status       int
-}
+	"github.com/glebarez/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+)
 
 // ScanRecord 扫描去重记录表，存原始 "path,size"。
 // 用 UNIQUE(full_file_name) 约束 + ON CONFLICT DO NOTHING 实现幂等插入，
@@ -33,16 +20,13 @@ type ScanRecord struct {
 	Created      time.Time
 }
 
-// recordEntry 是 ScanRecord 的一条导出表示，供 logic/cmd 使用
 type RecordEntry struct {
 	Path string
 	Size int64
 }
 
 type IScanFile interface {
-	Insert(fullFileName string)
-	FindByFullFileName(fullFileName string) *MyFile
-	FindMd5(fileMD5 string) []MyFile
+	AddRecord(path string, size int64) bool
 }
 
 type ScanFile struct {
@@ -65,7 +49,7 @@ func NewScanFile(dsn string) *ScanFile {
 	// 启用 WAL，提升并发写入
 	db.Exec("PRAGMA journal_mode=WAL")
 	// 迁移 schema
-	if err := db.AutoMigrate(&MyFile{}, &ScanRecord{}); err != nil {
+	if err := db.AutoMigrate(&ScanRecord{}); err != nil {
 		panic(err)
 	}
 	return &ScanFile{db: db}
@@ -74,46 +58,6 @@ func NewScanFile(dsn string) *ScanFile {
 // DB 暴露底层 gorm.DB，供 logic 层组合查询使用
 func (m *ScanFile) DB() *gorm.DB {
 	return m.db
-}
-
-func (m *ScanFile) Insert(fullFileName string) {
-	var fileMD5 string
-	var fileSize int64
-	result := m.FindByFullFileName(fullFileName)
-	stat, err := os.Stat(fullFileName)
-	if err != nil {
-		if os.IsNotExist(err) {
-			log.Printf("文件 %s 不存在\n", fullFileName)
-		}
-		fileSize = 0
-	} else {
-		fileSize = stat.Size()
-		fileMD5 = help.GetFileMd5(fullFileName)
-	}
-	if result.FullFileName == "" {
-		m.db.Create(&MyFile{
-			FullFileName: fullFileName,
-			Size:         fileSize,
-			FileMD5:      fileMD5,
-			Created:      time.Now(),
-			Status:       1,
-		})
-	} else if result.Size == 0 {
-		result.Size = fileSize
-		m.db.Save(result)
-	}
-}
-
-func (m *ScanFile) FindByFullFileName(fullFileName string) *MyFile {
-	var data MyFile
-	m.db.First(&data, "full_file_name = ?", fullFileName)
-	return &data
-}
-
-func (m *ScanFile) FindMd5(fileMD5 string) []MyFile {
-	var data []MyFile
-	m.db.Find(&data, "file_md5 = ?", fileMD5)
-	return data
 }
 
 // ---- ScanRecord 操作（替换原 Redis Set 链路）----

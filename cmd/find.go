@@ -2,7 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Alexchent/goscan/logic"
+
+	"github.com/Alexchent/goscan/service"
 	"github.com/spf13/cobra"
 )
 
@@ -19,7 +20,7 @@ var findCmd = &cobra.Command{
 			return
 		}
 		count := 0
-		count += logic.Search(keyword)
+		count += service.Search(keyword)
 		res := fmt.Sprintf("本次扫描发现 %d 个文件", count)
 		fmt.Println(res)
 	},
