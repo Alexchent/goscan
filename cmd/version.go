@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/Alexchent/goscan/config"
 	"github.com/spf13/cobra"
 )
@@ -21,7 +22,6 @@ var versionCmd = &cobra.Command{
 			fmt.Println("(工作区未初始化，执行 scan init 初始化)")
 			return
 		}
-		fmt.Println("配置文件：" + cfgFile)
 		fmt.Println("工作区：", config.Conf.Workspace)
 		fmt.Println("导出文件保存位置：", config.Conf.Dir)
 		fmt.Println("数据库：", config.Conf.SqLPath())
