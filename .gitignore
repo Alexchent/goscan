@@ -9,5 +9,5 @@ etc
 .DS_Store
 *.log
 goscan
-sscan
-scan
+/sscan
+/scan
