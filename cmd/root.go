@@ -35,8 +35,7 @@ var rootCmd = &cobra.Command{
 	// PersistentPreRunE 对所有子命令生效：先解析工作区并加载配置。
 	// init 命令负责创建工作区，不要求工作区已初始化，故豁免。
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		// 顶层 `scan -v` 等价于 `scan version`：已初始化时展示完整配置，
-		// 未初始化时降级为仅打印版本号。
+		// 顶层 `scan -v`：已初始化时展示完整配置，未初始化时降级为仅打印版本号。
 		if showVersion {
 			_ = loadConfig()
 			return nil
@@ -47,12 +46,6 @@ var rootCmd = &cobra.Command{
 		//   remove    —— 读 JSON 执行 mv，不依赖工作区
 		switch cmd.Name() {
 		case "init", "duplicate", "remove":
-			return nil
-		}
-		// version 允许在工作区未初始化时降级运行（只打印版本号），
-		// 已初始化则正常加载以展示完整配置信息。
-		if cmd.Name() == "version" {
-			_ = loadConfig()
 			return nil
 		}
 		return loadConfig()

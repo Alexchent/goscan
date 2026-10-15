@@ -29,12 +29,8 @@ func trimLeadingV(s string) string {
 	return s
 }
 
-//func init() {
-//	rootCmd.AddCommand(versionCmd)
-//}
-
 // printVersion 打印版本号，以及工作区初始化后完整的配置信息。
-// 供 versionCmd 与 `scan -v` 共用。
+// 由顶层 `scan -v`（rootCmd.Run）调用。
 func printVersion() {
 	fmt.Println("当前版本是：v" + currentVersion())
 	// 未初始化工作区时仅打印版本号
@@ -47,12 +43,3 @@ func printVersion() {
 	fmt.Println("数据库：", config.Conf.SqLPath())
 	fmt.Println("扫描时忽略掉的文件类型：", config.Conf.FilterType)
 }
-
-//var versionCmd = &cobra.Command{
-//	Use:   "version",
-//	Short: "Print the version number",
-//	Long:  `All software has versions. This is goscan`,
-//	Run: func(cmd *cobra.Command, args []string) {
-//		printVersion()
-//	},
-//}
