@@ -1,7 +1,6 @@
 package duplicate
 
 import (
-	"encoding/csv"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -135,60 +134,4 @@ func printToConsole(results []DuplicateResult, totalFiles int64, start time.Time
 			}
 		}
 	}
-}
-
-// saveToCSV 保存结果到 CSV 文件
-func saveToCSV(results []DuplicateResult, scanPath string) {
-	if len(results) == 0 {
-		return
-	}
-
-	// 生成文件名
-	timestamp := time.Now().Format("20060102_150405")
-	filename := fmt.Sprintf("duplicate_files_%s.csv", timestamp)
-
-	file, err := os.Create(filename)
-	if err != nil {
-		fmt.Println(color.RedString("创建CSV文件失败: %v", err))
-		return
-	}
-	defer file.Close()
-
-	// 写入 UTF-8 BOM，确保 Excel 正确识别编码
-	file.WriteString("\xEF\xBB\xBF")
-
-	writer := csv.NewWriter(file)
-	defer writer.Flush()
-
-	// 写入表头
-	header := []string{"序号", "MD5", "文件大小", "副本数量", "可节省空间", "文件路径"}
-	if err := writer.Write(header); err != nil {
-		fmt.Println(color.RedString("写入CSV表头失败: %v", err))
-		return
-	}
-
-	// 写入数据
-	for i, r := range results {
-		for j, fileInfo := range r.Files {
-			row := []string{
-				fmt.Sprintf("%d", i+1),
-				r.MD5,
-				r.SizeFormatted,
-				fmt.Sprintf("%d", r.Count),
-				pkg.FormatFileSize1000(r.Saved),
-				fileInfo.Path,
-			}
-			if j == 0 {
-				row[0] = fmt.Sprintf("%d (原文件)", i+1)
-			} else {
-				row[0] = fmt.Sprintf("%d (副本%d)", i+1, j)
-			}
-			if err := writer.Write(row); err != nil {
-				fmt.Println(color.RedString("写入CSV数据失败: %v", err))
-				return
-			}
-		}
-	}
-
-	fmt.Printf("\n%s %s\n", color.GreenString("✓ 结果已保存到:"), color.YellowString(filename))
 }

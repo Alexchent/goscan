@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -13,10 +14,6 @@ import (
 	"github.com/Alexchent/goscan/pkg"
 	"github.com/gookit/color"
 )
-
-// CacheKey 保留旧常量名以减少 cmd 层改动；语义从 Redis key 变为
-// "扫描去重记录集合"的标识，当前仅在日志文件名与提示文案中沿用。
-const CacheKey = "have_save_file"
 
 // scanFile 是包级共享的 SQLite 访问入口，由 config.InitConf 通过 SetDB 注入。
 // 之所以用包级变量而非每次 new：scan/find/clean/dump/load 等子命令都共享
@@ -26,11 +23,6 @@ var scanFile *model.ScanFile
 // SetDB 注入由 config 初始化好的 ScanFile，供本包各命令复用。
 func SetDB(s *model.ScanFile) {
 	scanFile = s
-}
-
-// DB 返回当前注入的 ScanFile，未初始化时返回 nil。供 cmd 层兜底使用。
-func DB() *model.ScanFile {
-	return scanFile
 }
 
 // 文件日志管理器
@@ -88,6 +80,26 @@ func Save(filePath string, filterType map[string]struct{}) (err error) {
 	}
 	defer CloseLogfile()
 
+	// 批量写入缓存：攒满 batchSize 一次入库，避免扫描大量文件时逐条磁盘 IO
+	const batchSize = 500
+	pending := make([]*model.ScanRecord, 0, batchSize)
+
+	flush := func() error {
+		if len(pending) == 0 {
+			return nil
+		}
+		added := scanFile.AddRecords(pending)
+		for _, rec := range added {
+			line := fmt.Sprintf("%s,%d", rec.FullFileName, rec.Size)
+			logger.mu.Lock()
+			_, _ = logger.bw.WriteString(line + pkg.FormatFileSize1000(rec.Size) + "\n")
+			logger.mu.Unlock()
+			fmt.Printf("new file %s %s\n", rec.FullFileName, color.HiGreen.Sprint(pkg.FormatFileSize1000(rec.Size)))
+		}
+		pending = pending[:0]
+		return nil
+	}
+
 	err = filepath.Walk(filePath, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			// 记录错误但继续处理其他文件
@@ -112,17 +124,20 @@ func Save(filePath string, filterType map[string]struct{}) (err error) {
 			return nil
 		}
 
-		// 写入 SQLite 成功(RowsAffected==1) 说明是新文件，与原 cache.SAdd==1 语义一致
-		if scanFile.AddRecord(path, info.Size()) {
-			file := fmt.Sprintf("%s,%d", path, info.Size())
-			// 使用互斥锁保护写入操作
-			logger.mu.Lock()
-			_, _ = logger.bw.WriteString(file + pkg.FormatFileSize1000(info.Size()) + "\n")
-			logger.mu.Unlock()
-			fmt.Printf("new file %s %s\n", path, color.HiGreen.Sprint(pkg.FormatFileSize1000(info.Size())))
+		// 攒入批次，攒满即入库
+		pending = append(pending, &model.ScanRecord{
+			FullFileName: path,
+			Size:         info.Size(),
+		})
+		if len(pending) >= batchSize {
+			return flush()
 		}
 		return nil
 	})
+	// 收尾：刷新剩余批次
+	if ferr := flush(); err == nil && ferr != nil {
+		err = ferr
+	}
 
 	// 确保日志刷新
 	logger.mu.Lock()
@@ -142,7 +157,12 @@ func Search(keyword string) (count int) {
 	for _, val := range scanFile.Search(keyword) {
 		res := strings.Split(val, ",")
 		if len(res) == 2 {
-			fmt.Println(res[0], color.HiGreen.Sprint(res[1]))
+			size, err := strconv.ParseInt(res[1], 10, 64)
+			if err != nil {
+				fmt.Println(val)
+			} else {
+				fmt.Println(res[0], color.HiGreen.Sprint(pkg.FormatFileSize(size)))
+			}
 		} else {
 			fmt.Println(val)
 		}
