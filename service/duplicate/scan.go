@@ -42,6 +42,12 @@ func walkFiles(dir string, wg *sync.WaitGroup, ch chan *DuplicateFile, fileCount
 				continue
 			}
 
+			// 计算文件内容 MD5（单个文件失败则跳过，不影响本次扫描）
+			md5, err := pkg.GetFileMd5(fullName)
+			if err != nil {
+				continue
+			}
+
 			// 计数
 			countMutex.Lock()
 			*fileCount++
@@ -50,7 +56,7 @@ func walkFiles(dir string, wg *sync.WaitGroup, ch chan *DuplicateFile, fileCount
 			// 发送到 channel
 			ch <- &DuplicateFile{
 				FullFileName: fullName,
-				MD5:          pkg.GetFileMd5(fullName),
+				MD5:          md5,
 				Size:         info.Size(),
 			}
 		}

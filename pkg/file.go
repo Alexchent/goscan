@@ -70,20 +70,21 @@ func ReadLine(filename string) {
 	}
 }
 
-// GetFileMd5 生成文件的md5
-func GetFileMd5(filename string) string {
+// GetFileMd5 生成文件的md5。
+// 打开或读取失败时返回 error（不终止进程），由调用方决定是否跳过。
+func GetFileMd5(filename string) (string, error) {
 	file, err := os.Open(filename)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 	defer file.Close()
 
 	// 获取文件的md5
 	h := md5.New()
 	if _, err := io.Copy(h, file); err != nil {
-		log.Fatal(err)
+		return "", err
 	}
-	return fmt.Sprintf("%x", h.Sum(nil))
+	return fmt.Sprintf("%x", h.Sum(nil)), nil
 }
 
 func FileIsExist(file string) bool {

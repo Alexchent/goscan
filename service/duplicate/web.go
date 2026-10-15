@@ -346,7 +346,7 @@ func startWebServer() {
 		tmpl.Execute(w, data)
 	})
 
-	// 删除文件 API
+	// 删除文件 API（仅允许删除本次扫描出的"副本"文件，拒绝任意路径删除）
 	http.HandleFunc("/delete", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -364,8 +364,24 @@ func startWebServer() {
 			return
 		}
 
+		// 白名单：仅本次扫描结果的"副本"（每组非原文件）允许删除，防止任意文件删除。
+		allowDelete := make(map[string]struct{})
+		for _, res := range scanResults {
+			for j, f := range res.Files {
+				if j > 0 {
+					allowDelete[f.Path] = struct{}{}
+				}
+			}
+		}
+
 		var deleted, failed int
+		rejected := 0
 		for _, file := range req.Files {
+			if _, ok := allowDelete[file]; !ok {
+				rejected++
+				fmt.Printf("拒绝删除（不在副本白名单内）: %s\n", file)
+				continue
+			}
 			if err := os.Remove(file); err != nil {
 				failed++
 				fmt.Printf("删除失败: %s - %v\n", file, err)
@@ -377,9 +393,10 @@ func startWebServer() {
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"success": true,
-			"deleted": deleted,
-			"failed":  failed,
+			"success":  true,
+			"deleted":  deleted,
+			"failed":   failed,
+			"rejected": rejected,
 		})
 	})
 
@@ -434,7 +451,7 @@ func startWebServer() {
 		openBrowser(url)
 	}()
 
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", webPort), nil); err != nil {
+	if err := http.ListenAndServe("127.0.0.1:8080", nil); err != nil {
 		fmt.Println(color.RedString("Web服务器启动失败: %v", err))
 	}
 }
