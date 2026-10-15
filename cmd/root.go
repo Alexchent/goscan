@@ -29,6 +29,10 @@ var rootCmd = &cobra.Command{
 			printVersion()
 			return
 		}
+		if scanDir != "" {
+			startWork()
+			return
+		}
 		// 无子命令且无 -v 时给出提示，等价于 -h 的简要说明。
 		_ = cmd.Help()
 	},
@@ -71,6 +75,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&workspace, "workspace", "w", "", "工作区目录，默认 ~/.scan")
 	// 顶层 `scan -v` 打印版本号，等价于 `scan version`
 	rootCmd.Flags().BoolVarP(&showVersion, "version", "v", false, "打印版本信息")
+	rootCmd.Flags().StringVarP(&scanDir, "dir", "d", "", "需要扫描的目录")
 	// 关闭 cobra 默认注册的 completion 子命令
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 }
