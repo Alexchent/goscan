@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/Alexchent/goscan/config"
 	"github.com/Alexchent/goscan/service"
 	"github.com/spf13/cobra"
@@ -16,6 +18,7 @@ var (
 	scanDir string
 	// showVersion 由 -v/--version 触发，顶层 `scan -v` 时打印版本信息。
 	showVersion bool
+	keyword     string
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -27,6 +30,13 @@ var rootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		if showVersion {
 			printVersion()
+			return
+		}
+		if len(keyword) != 0 {
+			count := 0
+			count += service.Search(keyword)
+			res := fmt.Sprintf("本次扫描发现 %d 个文件", count)
+			fmt.Println(res)
 			return
 		}
 		if scanDir != "" {
@@ -76,6 +86,8 @@ func init() {
 	// 顶层 `scan -v` 打印版本号，等价于 `scan version`
 	rootCmd.Flags().BoolVarP(&showVersion, "version", "v", false, "打印版本信息")
 	rootCmd.Flags().StringVarP(&scanDir, "dir", "d", "", "需要扫描的目录")
+	rootCmd.Flags().StringVarP(&keyword, "keywords", "k", "", "关键字")
+
 	// 关闭 cobra 默认注册的 completion 子命令
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 }
