@@ -5,7 +5,9 @@ storage
 gscan
 etc
 .scan.yaml
+.scan
 .DS_Store
 *.log
 goscan
-.scan
+sscan
+scan
