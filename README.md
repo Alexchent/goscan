@@ -11,6 +11,18 @@
 - 从扫描记录中搜索文件。模糊查询 `./scan find {filenmae}`
 - `./scan clean -c {filetype}` 从记录中清理掉指定的文件类型，配置文件中指定
 
+## 安装
+
+通过 `go install` 一键安装 `scan` 与 `sscan` 到 `~/go/bin`：
+
+```bash
+go install github.com/Alexchent/goscan/cmd/scan@latest   # 安装 scan
+go install github.com/Alexchent/goscan/cmd/sscan@latest  # 安装 sscan
+```
+
+> 安装特定版本可把 `@latest` 换成具体 tag，如 `@v1.0.4`。安装后确保
+> `~/go/bin` 已加入 `PATH`。
+
 ## 编译
 1. 编译成本地运行的程序
 ```bash
