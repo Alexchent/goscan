@@ -14,7 +14,7 @@ var (
 	loadFile string
 
 	loadCmd = &cobra.Command{
-		Use:   "load",
+		Use:   "import",
 		Short: "加载文件中的记录",
 		Long:  `导入文件中的记录`,
 		Run: func(cmd *cobra.Command, args []string) {

@@ -19,7 +19,7 @@ var output string
 
 // exportCmd represents the export command
 var exportCmd = &cobra.Command{
-	Use:   "dump",
+	Use:   "export",
 	Short: "导出历史扫描记录到本地文件",
 	Long: `将历史扫描记录导出到本地文本文件，每条记录占一行。
 
@@ -27,11 +27,11 @@ var exportCmd = &cobra.Command{
 可通过 -o/--output 指定导出目录（路径必须以路径分隔符结尾，如 ./logs/ 或 /tmp/），
 否则仍导出到当前目录。`,
 	Example: `  # 导出到当前目录
-  scan dump
+  scan export
 
   # 导出到指定目录（注意结尾的路径分隔符）
-  scan dump -o ./logs/
-  scan dump --output /tmp/`,
+  scan export -o ./logs/
+  scan export --output /tmp/`,
 	Run: func(cmd *cobra.Command, args []string) {
 		saveDir := "."
 		if len(output) > 0 && os.IsPathSeparator(output[len(output)-1]) {
