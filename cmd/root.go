@@ -14,6 +14,8 @@ var (
 	// scanDir 是 --dir flag 的接收变量，仅在 start / duplicate 子命令中使用，
 	// 不应与标准库 path 包或局部变量混用，请勿在其它文件中再声明同名局部变量。
 	scanDir string
+	// showVersion 由 -v/--version 触发，顶层 `scan -v` 时打印版本信息。
+	showVersion bool
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -21,9 +23,24 @@ var rootCmd = &cobra.Command{
 	Use:   "scan",
 	Short: "scan 用于扫描文件目录，和查找文件",
 	Long:  `scan 是一个用于扫描本地文件，形成日志文件，以便或许快速查找文件的程序`,
+	// Run 仅在顶层无子命令时执行（如 `scan -v`）。
+	Run: func(cmd *cobra.Command, args []string) {
+		if showVersion {
+			printVersion()
+			return
+		}
+		// 无子命令且无 -v 时给出提示，等价于 -h 的简要说明。
+		_ = cmd.Help()
+	},
 	// PersistentPreRunE 对所有子命令生效：先解析工作区并加载配置。
 	// init 命令负责创建工作区，不要求工作区已初始化，故豁免。
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		// 顶层 `scan -v` 等价于 `scan version`：已初始化时展示完整配置，
+		// 未初始化时降级为仅打印版本号。
+		if showVersion {
+			_ = loadConfig()
+			return nil
+		}
 		// 以下命令不依赖工作区配置，豁免初始化校验：
 		//   init      —— 负责创建工作区
 		//   duplicate —— 纯内存扫描，不读写 DB
@@ -59,6 +76,8 @@ func Execute() error {
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "配置文件路径（优先级高于 -w）")
 	rootCmd.PersistentFlags().StringVarP(&workspace, "workspace", "w", "", "工作区目录，默认 ~/.scan")
+	// 顶层 `scan -v` 打印版本号，等价于 `scan version`
+	rootCmd.Flags().BoolVarP(&showVersion, "version", "v", false, "打印版本信息")
 	// 关闭 cobra 默认注册的 completion 子命令
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 }
