@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"runtime/debug"
 
 	"github.com/Alexchent/goscan/config"
 	"github.com/spf13/cobra"
@@ -10,6 +11,24 @@ import (
 // version 在编译时通过 -ldflags "-X github.com/Alexchent/goscan/cmd.version=xxx" 注入，
 // 默认值 dev。发布时由 Makefile / 构建脚本以 git tag 填入。
 var version = "dev"
+
+// currentVersion 返回当前版本号，去掉前导 v。
+// 优先读取模块构建信息（go install module@tag 场景会自动带上解析的版本号），
+// 其次用 ldflags 注入的 version，最后回退到 dev。
+func currentVersion() string {
+	if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "" && info.Main.Version != "(devel)" {
+		return trimLeadingV(info.Main.Version)
+	}
+	return trimLeadingV(version)
+}
+
+// trimLeadingV 去掉版本号开头的 v（v1.0.4 -> 1.0.4）。
+func trimLeadingV(s string) string {
+	if len(s) > 0 && s[0] == 'v' {
+		return s[1:]
+	}
+	return s
+}
 
 func init() {
 	rootCmd.AddCommand(versionCmd)
@@ -20,7 +39,7 @@ var versionCmd = &cobra.Command{
 	Short: "Print the version number",
 	Long:  `All software has versions. This is goscan`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("当前版本是：v" + version)
+		fmt.Println("当前版本是：v" + currentVersion())
 		// 未初始化工作区时仅打印版本号
 		if config.Conf.Workspace == "" || config.Conf.DB == nil {
 			fmt.Println("(工作区未初始化，执行 scan init 初始化)")
