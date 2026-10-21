@@ -6,16 +6,16 @@ VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null | sed 's/^v/
 LDFLAGS = -X github.com/Alexchent/goscan/cmd.version=$(VERSION)
 
 default:
-	go build -ldflags "$(LDFLAGS)" -o scan github.com/Alexchent/goscan
+	go build -ldflags "$(LDFLAGS)" -o scan github.com/Alexchent/goscan/cmd/scan
 
 linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o scan github.com/Alexchent/goscan
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o scan github.com/Alexchent/goscan/cmd/scan
 
 win:
-	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o scan github.com/Alexchent/goscan
+	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o scan github.com/Alexchent/goscan/cmd/scan
 
 mac:
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o scan github.com/Alexchent/goscan
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o scan github.com/Alexchent/goscan/cmd/scan
 
 install:
-	go install github.com/Alexchent/goscan@latest
+	go install github.com/Alexchent/goscan/cmd/scan@latest
