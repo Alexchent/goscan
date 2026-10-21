@@ -6,19 +6,16 @@ VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null | sed 's/^v/
 LDFLAGS = -X github.com/Alexchent/goscan/cmd.version=$(VERSION)
 
 default:
-	go build -ldflags "$(LDFLAGS)" -o scan github.com/Alexchent/goscan/cmd/scan
-	go build -ldflags "$(LDFLAGS)" -o sscan github.com/Alexchent/goscan/cmd/sscan
+	go build -ldflags "$(LDFLAGS)" -o scan github.com/Alexchent/goscan
 
 linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o scan github.com/Alexchent/goscan/cmd/scan
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o scan github.com/Alexchent/goscan
 
 win:
-	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o scan github.com/Alexchent/goscan/cmd/scan
+	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o scan github.com/Alexchent/goscan
 
 mac:
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o scan github.com/Alexchent/goscan/cmd/scan
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o scan github.com/Alexchent/goscan
 
 install:
-	@echo "先用 go install 安装两个二进制："
-	go install github.com/Alexchent/goscan/cmd/scan@latest
-	go install github.com/Alexchent/goscan/cmd/sscan@latest
+	go install github.com/Alexchent/goscan@latest

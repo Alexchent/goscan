@@ -161,7 +161,7 @@ func Search(keyword string) (count int) {
 			if err != nil {
 				fmt.Println(val)
 			} else {
-				fmt.Println(res[0], color.HiGreen.Sprint(pkg.FormatFileSize(size)))
+				fmt.Println(res[0], color.HiGreen.Sprint(pkg.FormatFileSize1000(size)))
 			}
 		} else {
 			fmt.Println(val)
