@@ -33,13 +33,6 @@ func trimLeadingV(s string) string {
 // 由顶层 `scan -v`（rootCmd.Run）调用。
 func printVersion() {
 	fmt.Println("当前版本是：v" + currentVersion())
-	// 未初始化工作区时仅打印版本号
-	if config.Conf.Workspace == "" || config.Conf.DB == nil {
-		fmt.Println("(工作区未初始化，执行 scan init 初始化)")
-		return
-	}
-	fmt.Println("工作区：", config.Conf.Workspace)
-	fmt.Println("导出文件保存位置：", config.Conf.Dir)
-	fmt.Println("数据库：", config.Conf.SqLPath())
+	fmt.Println("导出文件保存位置：", workspace)
 	fmt.Println("扫描时忽略掉的文件类型：", config.Conf.FilterType)
 }

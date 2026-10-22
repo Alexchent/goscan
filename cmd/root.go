@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/Alexchent/goscan/config"
 	"github.com/Alexchent/goscan/service"
@@ -49,19 +51,7 @@ var rootCmd = &cobra.Command{
 	// PersistentPreRunE 对所有子命令生效：先解析工作区并加载配置。
 	// init 命令负责创建工作区，不要求工作区已初始化，故豁免。
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		// 顶层 `scan -v`：已初始化时展示完整配置，未初始化时降级为仅打印版本号。
-		if showVersion {
-			_ = loadConfig()
-			return nil
-		}
-		// 以下命令不依赖工作区配置，豁免初始化校验：
-		//   init      —— 负责创建工作区
-		//   duplicate —— 纯内存扫描，不读写 DB
-		//   remove    —— 读 JSON 执行 mv，不依赖工作区
-		switch cmd.Name() {
-		case "init", "duplicate", "remove":
-			return nil
-		}
+		_, _ = MakeWorkSpace()
 		return loadConfig()
 	},
 }
@@ -81,8 +71,10 @@ func Execute() error {
 }
 
 func init() {
+	home, _ := os.UserHomeDir()
+	workspace = filepath.Join(home, ".scan")
+
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "配置文件路径（优先级高于 -w）")
-	rootCmd.PersistentFlags().StringVarP(&workspace, "workspace", "w", "", "工作区目录，默认 ~/.scan")
 	// 顶层 `scan -v` 打印版本号，等价于 `scan version`
 	rootCmd.Flags().BoolVarP(&showVersion, "version", "v", false, "打印版本信息")
 	rootCmd.Flags().StringVarP(&scanDir, "dir", "d", "", "需要扫描的目录")

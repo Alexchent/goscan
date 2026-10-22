@@ -39,7 +39,6 @@ func InstallCompletion(w string, genScript func(io.Writer) error) error {
 	if err := genScript(fd); err != nil {
 		return fmt.Errorf("生成补全脚本失败: %w", err)
 	}
-	fmt.Println("已生成补全脚本:", completionFile)
 
 	// 2. 追加 source 行到 ~/.zshrc（若尚未安装）。
 	home, err := os.UserHomeDir()
@@ -58,7 +57,6 @@ func InstallCompletion(w string, genScript func(io.Writer) error) error {
 // 已存在则跳过；不存在则追加。
 func ensureZshrcBlock(zshrc, completionFile string) error {
 	if hasCompletionBlock(zshrc) {
-		fmt.Println(".zshrc 已包含 scan 补全配置，跳过追加。")
 		return nil
 	}
 
